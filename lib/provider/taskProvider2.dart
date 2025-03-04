@@ -25,6 +25,11 @@ class TaskProvider2 with ChangeNotifier {
     return _tasks.where((task) => task.category == category).toList();
   }
 
+  int get completedTaskCount => _tasks.where((task) => task.isCompleted).length;
+
+  int get incompletedTaskCount =>
+      _tasks.where((task) => !task.isCompleted).length;
+
   String _selectedCategory = "University"; // Default category
 
   String get selectedCategory => _selectedCategory;
@@ -35,12 +40,12 @@ class TaskProvider2 with ChangeNotifier {
   }
 
   // Category to Icon mapping
-  static Map<String, IconData> categoryIcons = {
-    "University": Icons.school,
-    "Health": Icons.favorite,
-    "Music": Icons.music_note,
-    "Work": Icons.work,
-  };
+  // static Map<String, IconData> categoryIcons = {
+  //   "University": Icons.school,
+  //   "Health": Icons.favorite,
+  //   "Music": Icons.music_note,
+  //   "Work": Icons.work,
+  // };
 
   void setToday() {
     _isToday = true;

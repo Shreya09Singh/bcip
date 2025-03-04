@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bciapplication/utils/category_icons.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bciapplication/utils/constants.dart';
@@ -28,26 +29,27 @@ class TaskItemWidget2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 30, right: 30, bottom: 20),
+      padding: const EdgeInsets.only(
+        left: 30,
+        right: 30,
+        bottom: 20,
+      ),
       child: Container(
-        height: 80,
+        height: 75,
         width: 300,
         decoration: BoxDecoration(
           color: greybackgroundColor,
           borderRadius: BorderRadius.circular(4),
         ),
         child: ListTile(
-            title: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text(
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                title,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 17,
-                  color: Colors.white,
-                ),
+            title: Text(
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 17,
+                color: Colors.white,
               ),
             ),
             subtitle: Row(
@@ -55,24 +57,28 @@ class TaskItemWidget2 extends StatelessWidget {
               children: [
                 Text(
                   displayDate,
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+                  style: TextStyle(fontSize: 14, color: textSecondaryColor),
                 ),
                 Container(
                   height: 30,
                   width: 80,
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: brandPrimaryColor,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Icon(icon, size: 18, color: Colors.white),
+                      Icon(
+                        categoryIcons[category] ?? Icons.category,
+                        color: textPrimaryColor,
+                        size: 20,
+                      ),
                       SizedBox(width: 4),
                       Text(
                         overflow: TextOverflow.ellipsis,
                         category,
-                        style: TextStyle(fontSize: 13, color: Colors.white),
+                        style: TextStyle(fontSize: 12, color: Colors.white),
                       ),
                     ],
                   ),
@@ -85,7 +91,8 @@ class TaskItemWidget2 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Icon(
-                    ongoing ? Icons.sync_alt : Icons.check_box,
+                    ongoing ? Icons.sync_alt : Icons.check_circle_outline,
+                    size: 28,
                     color: ongoing ? brandPrimaryColor : Colors.lightGreen,
                   ),
                   Text(

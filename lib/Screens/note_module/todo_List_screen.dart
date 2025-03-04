@@ -12,6 +12,7 @@ import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/widget/custom_button.dart';
 import 'package:bciapplication/widget/custom_date_picker.dart';
 import 'package:bciapplication/widget/custom_time_picker.dart';
+import 'package:bciapplication/widget/dropdown_widget.dart';
 import 'package:bciapplication/widget/onboarding_button.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +36,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   bool isaddingTask = false;
   IconData? selectedicon;
 
-  final List<String> categoriess = ["University", "Health", "Music", "Work"];
+  final List<String> categories = ["University", "Health", "Music", "Work"];
   Widget build(BuildContext context) {
     final provider = Provider.of<ConnectionProvider>(context);
     final taskProvider = Provider.of<TaskProvider2>(context);
@@ -150,7 +151,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                       child: SizedBox(
                         height: 320, // Adjust height
                         child: GridView.builder(
-                          itemCount: categoriess.length,
+                          itemCount: categories.length,
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -162,14 +163,16 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                 onTap: () {
                                   print("here is cat");
                                   print(catagoryController.text);
-                                  taskProvider.selectedCategory[index];
+
+                                  taskProvider
+                                      .selectCategory(categories[index]);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              CategoryTasksScreen(
-                                                  category: catagoryController
-                                                      .text)));
+                                              ShowtasksCategory(
+                                                  category:
+                                                      categories[index])));
                                 },
                                 child: Container(
                                     decoration: BoxDecoration(
@@ -192,7 +195,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                           height: 10,
                                         ),
                                         Text(
-                                          categoriess[index],
+                                          categories[index],
                                           style: TextStyle(
                                               fontSize: 18,
                                               color: textPrimaryColor,
@@ -279,11 +282,15 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                   SizedBox(height: 20),
                                   SizedBox(
                                     height: 52,
-                                    child: buildTextField(
-                                      txtcontroller: catagoryController,
-                                      isicon: false,
-                                      hintText: 'Enter Task catagory',
-                                    ),
+                                    child: CustomDropdown(
+                                        selectedValue: selectedcatagory,
+                                        categories: categories,
+                                        onChanged: (String? newval) {
+                                          setState(() {
+                                            selectedcatagory = newval;
+                                          });
+                                        },
+                                        controller: catagoryController),
                                   ),
                                   SizedBox(height: 20),
                                   Row(

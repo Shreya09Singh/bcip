@@ -1,16 +1,19 @@
 import 'package:bciapplication/Screens/note_module/ShowTask_screen.dart';
+import 'package:bciapplication/provider/taskProvider2.dart';
 
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/widget/TabBar.dart';
 import 'package:bciapplication/widget/progressComparisonChart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class ShowprogressScreen extends StatelessWidget {
   const ShowprogressScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final taskprovider = Provider.of<TaskProvider2>(context);
     return Scaffold(
       backgroundColor: backgroundBlackColor,
       appBar: AppBar(
@@ -44,9 +47,42 @@ class ShowprogressScreen extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TabBarScreen(
+                          initialIndex: 2, // Set default to "Completed"
+                          tabs: const [
+                            Tab(text: 'All'),
+                            Tab(text: 'Ongoing'),
+                            Tab(text: 'Completed'),
+                          ],
+                          tabViews: const [
+                            ShowtaskScreen(filter: 'All'),
+                            ShowtaskScreen(filter: 'Ongoing'),
+                            ShowtaskScreen(filter: 'Completed'),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  child: TaskCard(
+                    number: taskprovider.completedTaskCount,
+                    title: 'Completed',
+                    imagePath: 'assets/completedLines.png',
+                    cardColor: brandPrimaryColor,
+                    textColor: textPrimaryColor,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TabBarScreen(tabs: [
+                            builder: (context) =>
+                                TabBarScreen(initialIndex: 1, tabs: [
                                   Tab(
                                     text: 'All',
                                   ),
@@ -69,26 +105,7 @@ class ShowprogressScreen extends StatelessWidget {
                                 ])));
                   },
                   child: TaskCard(
-                      number: 10,
-                      title: 'Completed',
-                      imagePath: 'assets/completedLines.png',
-                      cardColor: brandPrimaryColor,
-                      textColor: textPrimaryColor),
-                ),
-                SizedBox(
-                  width: 15,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ShowtaskScreen(
-                                  filter: 'All',
-                                )));
-                  },
-                  child: TaskCard(
-                      number: 6,
+                      number: taskprovider.incompletedTaskCount,
                       title: 'Ongoing',
                       imagePath: 'assets/ongoingLines.png',
                       cardColor: backgroundWhiteColor,

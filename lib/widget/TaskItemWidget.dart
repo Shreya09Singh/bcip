@@ -1,3 +1,4 @@
+import 'package:bciapplication/utils/category_icons.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -62,13 +63,13 @@ class TaskItemWidget extends StatelessWidget {
           children: [
             Text(
               "$displayDate at $timeOfDay",
-              style: TextStyle(fontSize: 12, color: Colors.white),
+              style: TextStyle(fontSize: 12, color: textSecondaryColor),
             ),
           ],
         ),
         trailing: Container(
           height: 40,
-          width: 80,
+          width: 85,
           decoration: BoxDecoration(
             color: Colors.blue,
             borderRadius: BorderRadius.circular(6),
@@ -76,12 +77,17 @@ class TaskItemWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(
+                categoryIcons[category] ?? Icons.category,
+                color: textPrimaryColor,
+                size: 20,
+              ),
               // Icon(icon, size: 18, color: Colors.white),
               SizedBox(width: 4),
               Text(
                 overflow: TextOverflow.ellipsis,
                 category,
-                style: TextStyle(fontSize: 13, color: Colors.white),
+                style: TextStyle(fontSize: 12, color: Colors.white),
               ),
             ],
           ),
