@@ -51,15 +51,15 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<ConnectionProvider>(context);
 
-    void playSession(String sessionId, String sessionName) async {
-      apiService.setCurrentPlayingSession(
-          sessionId, sessionName); // Store the current session ID
-      print("Playing session id: $sessionId");
-      print("Playing session name: $sessionName");
+    // void playSession(String sessionId, String sessionName) async {
+    //   apiService.setCurrentPlayingSession(
+    //       sessionId, sessionName); // Store the current session ID
+    //   print("Playing session id: $sessionId");
+    //   print("Playing session name: $sessionName");
 
-      // If you are using an audio player package, start playing the session here.
-      // Example: audioPlayer.play(session.filePath);
-    }
+    //   // If you are using an audio player package, start playing the session here.
+    //   // Example: audioPlayer.play(session.filePath);
+    // }
 
     final sessionProvider = Provider.of<SessionProvider>(context);
 
