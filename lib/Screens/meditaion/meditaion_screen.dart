@@ -1,17 +1,22 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'package:bciapplication/services/api/API_services.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:bciapplication/Screens/meditaion/chart.dart';
-
 import 'package:bciapplication/Screens/session/session_screen.dart';
-
 import 'package:bciapplication/provider/connection_provider.dart';
-import 'package:bciapplication/provider/song_provider.dart';
+import 'package:bciapplication/provider/session_provider.dart';
 
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/widget/custom_button.dart';
 import 'package:bciapplication/widget/onboarding_button.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class MeditaionScreen extends StatefulWidget {
+  const MeditaionScreen({
+    Key? key,
+  }) : super(key: key);
   @override
   State<MeditaionScreen> createState() => _MeditaionScreenState();
 }
@@ -22,27 +27,41 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
   TextEditingController nubcontroller = TextEditingController();
   TextEditingController musiccontroller = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
+  double selectedThreshold = 0; // Default value from slider
+  APIService apiService = APIService();
+
   @override
   void initState() {
     super.initState();
     print("✅ initState is running");
+    Provider.of<SessionProvider>(context, listen: false).fetchSessions();
+    // Provider.of<SessionProvider>(context, listen: false).loadSessionId();
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("✅ Calling fetchRecomendedsongs()");
-      Provider.of<SongProvider>(context, listen: false).fetchRecomendedsongs();
+  String? selectedSessionId;
+  String? selectedSessionName;
+
+  void handleThresholdChange(double value) {
+    setState(() {
+      selectedThreshold = value; // Store the final slider value
     });
+    print("Selected Threshold: $selectedThreshold");
   }
 
   Widget build(BuildContext context) {
     final provider = Provider.of<ConnectionProvider>(context);
-    final songprovider = Provider.of<SongProvider>(context);
 
-    @override
-    void dispose() {
-      musiccontroller.dispose();
-      nubcontroller.dispose();
-      super.dispose();
+    void playSession(String sessionId, String sessionName) async {
+      apiService.setCurrentPlayingSession(
+          sessionId, sessionName); // Store the current session ID
+      print("Playing session id: $sessionId");
+      print("Playing session name: $sessionName");
+
+      // If you are using an audio player package, start playing the session here.
+      // Example: audioPlayer.play(session.filePath);
     }
+
+    final sessionProvider = Provider.of<SessionProvider>(context);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -80,7 +99,7 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16),
+        padding: const EdgeInsets.only(left: 25, right: 25),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,14 +149,14 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 50),
+              SizedBox(height: 30),
 
               // Search Music
               Text(
                 'Select Music',
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
@@ -147,7 +166,7 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                 decoration: InputDecoration(
                   hintText: "search music",
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(30),
                     borderSide:
                         const BorderSide(color: brandPrimaryColor, width: 3),
                   ),
@@ -162,7 +181,7 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                         color: brandPrimaryColor,
                       ),
                       onPressed: () {
-                        songprovider.fetchSearchsongs(musiccontroller.text);
+                        sessionProvider.searchSessions(musiccontroller.text);
                       }),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -171,7 +190,8 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                     ),
                     onPressed: () {
                       musiccontroller.clear();
-                      songprovider.clearSearchResults();
+
+                      sessionProvider.fetchSessions();
                     },
                   ),
                   border: OutlineInputBorder(
@@ -182,71 +202,71 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
               ),
 
               SizedBox(
-                  height: 160, // ✅ Ensure height is set
-                  child: songprovider.searchsongslist.isEmpty
-                      ? Consumer<SongProvider>(
-                          builder: (context, songprovider, child) {
-                          if (songprovider.isloading) {
-                            return Center(
-                                child: CircularProgressIndicator(
-                              color: brandPrimaryColor,
-                            ));
-                          } else if (songprovider.error != null) {
-                            return Center(
-                                child: Text(
-                              'Error: ${songprovider.error}',
-                            ));
-                          } else if (songprovider.recommendedsong.isEmpty) {
-                            return Center(child: Text('No songs found'));
-                          }
+                height: 15,
+              ),
+              Text(
+                'Recomended for chip',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              ),
 
-                          return SizedBox(
-                              height:
-                                  160, // ✅ Ensure ListView has a fixed height
-                              child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount:
-                                      songprovider.recommendedsong.length,
-                                  itemBuilder: (context, index) {
-                                    final songs =
-                                        songprovider.recommendedsong[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
+              SizedBox(
+                  height: 140,
+                  child: sessionProvider.sessions.isNotEmpty
+                      ? ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: sessionProvider.sessions.length,
+                          itemBuilder: (context, index) {
+                            final session = sessionProvider.sessions[index];
+
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 20),
+                                  Padding(
+                                    padding: const EdgeInsets.all(0.0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        selectedSessionId = session.sessionId;
+                                        selectedSessionName =
+                                            session.sessionName;
+                                      },
                                       child: Column(
                                         children: [
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: CircleAvatar(
-                                              radius: 42,
-                                              backgroundImage:
-                                                  NetworkImage(songs.imageUrl),
-                                            ),
+                                          CircleAvatar(
+                                            radius: 40,
+                                            backgroundImage:
+                                                NetworkImage(session.imageUrl),
                                           ),
                                           SizedBox(height: 10),
-                                          Text(songs.title,
+                                          Text(session.sessionName,
                                               style: TextStyle(
-                                                  color: textPrimaryColor)),
-                                          Text(songs.album,
-                                              style: TextStyle(
-                                                  color: textSecondaryColor,
-                                                  fontSize: 11)),
+                                                  fontSize: 13,
+                                                  color: textSecondaryColor)),
                                         ],
                                       ),
-                                    );
-                                  }));
-                        })
+                                    ),
+                                  ),
+                                  // SizedBox(height: 10),
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                      // Handle empty case
+
                       : SizedBox(
-                          height: 160, // ✅ Ensure ListView has a fixed height
+                          height: 140, // ✅ Ensure ListView has a fixed height
                           child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: songprovider.searchsongslist.length,
+                              itemCount: sessionProvider.sessions.length,
                               itemBuilder: (context, index) {
                                 final searchsongs =
-                                    songprovider.searchsongslist[index];
+                                    sessionProvider.sessions[index];
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
@@ -255,19 +275,27 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                                       SizedBox(
                                         height: 20,
                                       ),
-                                      CircleAvatar(
-                                        radius: 42,
-                                        backgroundImage:
-                                            NetworkImage(searchsongs.imageUrl),
+                                      InkWell(
+                                        onTap: () {
+                                          selectedSessionId =
+                                              searchsongs.sessionId;
+                                          selectedSessionName =
+                                              searchsongs.sessionName;
+                                        },
+                                        child: Column(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 42,
+                                              backgroundImage: NetworkImage(
+                                                  searchsongs.imageUrl),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Text(searchsongs.sessionName,
+                                                style: TextStyle(
+                                                    color: textPrimaryColor)),
+                                          ],
+                                        ),
                                       ),
-                                      SizedBox(height: 10),
-                                      Text(searchsongs.title,
-                                          style: TextStyle(
-                                              color: textPrimaryColor)),
-                                      Text(searchsongs.album,
-                                          style: TextStyle(
-                                              color: textSecondaryColor,
-                                              fontSize: 11)),
                                     ],
                                   ),
                                 );
@@ -276,22 +304,24 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
 
               //      Recommended Music
 
-              SizedBox(height: 20),
+              SizedBox(height: 15),
 
               // Meditation Threshold
               Text(
                 'Meditation Threshold',
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold),
               ),
 
               // Replace this with a custom threshold indicator widget
               SizedBox(
-                height: 130, // Set a fixed height for the visualizer
-                child:
-                    FrequencyVisualizer(), // Use the FrequencyVisualizer widget
+                height: 120, // Set a fixed height for the visualizer
+
+                child: FrequencyVisualizer(onThresholdChanged: (value) {
+                  handleThresholdChange(value);
+                }), // Use the FrequencyVisualizer widget
               ),
 
               Center(
@@ -299,7 +329,7 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                   'Session Time (min)',
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 17,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold),
                 ),
               ),
@@ -324,10 +354,16 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SessionScreen(
-                                      controller: nubcontroller)));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SessionScreen(
+                                thresholdvalue: selectedThreshold,
+                                sessionId: selectedSessionId!,
+                                sessionName: selectedSessionName!,
+                                controller: nubcontroller,
+                              ),
+                            ),
+                          );
                         }
                       },
                       buttonText: 'Start Session'),

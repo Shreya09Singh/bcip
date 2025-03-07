@@ -32,6 +32,9 @@ class BreathExerciseCard extends StatelessWidget {
             width: 90,
             child: Card(
               color: cardColor, // Dynamic card color
+              child: Image.network(
+                  fit: BoxFit.cover,
+                  'https://i.ytimg.com/vi/jv_uolrknjA/maxresdefault.jpg'),
             ),
           ),
           SizedBox(width: 10),

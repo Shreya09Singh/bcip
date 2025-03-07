@@ -1,9 +1,11 @@
 import 'package:bciapplication/Screens/progress/CustomChart.dart';
 
 import 'package:bciapplication/Screens/progress/pie_chart.dart';
+import 'package:bciapplication/provider/getsession_provider.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class WeekViewScreen extends StatefulWidget {
   const WeekViewScreen({super.key});
@@ -13,18 +15,34 @@ class WeekViewScreen extends StatefulWidget {
 }
 
 class _WeekViewScreenState extends State<WeekViewScreen> {
-  final List<WeekData> chartData = [
-    WeekData('Sun', 10),
-    WeekData('Mon', 3),
-    WeekData('Tue', 9),
-    WeekData('Wed', 6),
-    WeekData('Thu', 3),
-    WeekData('Fri', 4),
-    WeekData('Sat', 5),
-  ];
+  // final List<WeekData> chartData = [
+  //   WeekData('Sun', 10),
+  //   WeekData('Mon', 3),
+  //   WeekData('Tue', 9),
+  //   WeekData('Wed', 6),
+  //   WeekData('Thu', 3),
+  //   WeekData('Fri', 4),
+  //   WeekData('Sat', 5),
+  // ];
 
   @override
   Widget build(BuildContext context) {
+    final getsessionprovider = Provider.of<GetsessionProvider>(context);
+    List<int> focusValues = getsessionprovider.user!.sessions[0].focusValues;
+    print(focusValues); // Output: [90, 82, 66, 100, 94, 91, 8, 3, 6, 82]
+
+    List<WeekData> chartData = [];
+
+    for (int i = 0; i < 7; i++) {
+      chartData.add(WeekData(
+        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i], // Weekday names
+        getsessionprovider.user!.sessions[0]
+            .focusValues[i], // Taking values from first session
+      ));
+    }
+
+    print(chartData);
+
     return Scaffold(
       backgroundColor: backgroundBlackColor,
       body: SingleChildScrollView(
@@ -52,7 +70,11 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                   width: 165,
                   child: CustomPieChart(
                     redValue: 40,
-                    greenValue: 64,
+                    greenValue: getsessionprovider.isLoading
+                        ? 64
+                        : getsessionprovider
+                                .user!.sessions[0].selectedThreshold /
+                            7,
                     showPercentage: true,
                   ),
                 ),
@@ -112,12 +134,17 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                             TextSpan(
                                 text: "On average, you practiced mindfulness "),
                             TextSpan(
-                              text: "4% ",
+                              text: getsessionprovider.isLoading
+                                  ? ' 0'
+                                  : getsessionprovider
+                                      .user!.sessions[0].overThresholdCount
+                                      .toString(),
                               style: TextStyle(
                                   color: Colors.lightGreen,
                                   fontWeight: FontWeight.bold),
                             ),
-                            TextSpan(text: "more this week compared to last."),
+                            TextSpan(
+                                text: "% less this week compared to last."),
                           ],
                         ),
                       ),
@@ -126,7 +153,11 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ProgressStat(
-                            value: "9",
+                            value: getsessionprovider.isLoading
+                                ? '0'
+                                : getsessionprovider
+                                    .user!.sessions[0].listenDuration
+                                    .toString(),
                             label: "min/day",
                             subLabel: "This week",
                             valueColor: brandPrimaryColor,
@@ -142,8 +173,8 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.arrow_drop_up,
-                                    color: Colors.lightGreen, size: 18),
+                                Icon(Icons.arrow_drop_down,
+                                    color: Colors.red, size: 18),
                                 Text(
                                   " 4%",
                                   style: TextStyle(
@@ -156,8 +187,11 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                       ),
                       SizedBox(height: 4),
                       LinearProgressIndicator(
-                        value:
-                            9 / 10, // Adjust the ratio based on maximum value
+                        value: getsessionprovider.isLoading
+                            ? 23
+                            : getsessionprovider
+                                    .user!.sessions[1].listenDuration /
+                                10,
                         backgroundColor: Colors.grey.shade300,
                         color: brandPrimaryColor,
                         minHeight: 8,
@@ -165,7 +199,11 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                       ),
                       SizedBox(height: 12),
                       ProgressStat(
-                        value: "7",
+                        value: getsessionprovider.isLoading
+                            ? '34'
+                            : getsessionprovider
+                                .user!.sessions[0].selectedThreshold
+                                .toString(),
                         label: "min/day",
                         subLabel: "previous week",
                         valueColor: brandPrimaryColor,
@@ -174,7 +212,9 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                       ),
                       SizedBox(height: 4),
                       LinearProgressIndicator(
-                        value: 7 / 10, // Adjust based on actual max value
+                        value: getsessionprovider
+                                .user!.sessions[0].selectedThreshold /
+                            100,
                         backgroundColor: Colors.grey.shade300,
                         color: Colors.blue.shade400,
                         minHeight: 8,

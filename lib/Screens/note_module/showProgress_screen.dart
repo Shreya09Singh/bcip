@@ -1,5 +1,5 @@
 import 'package:bciapplication/Screens/note_module/ShowTask_screen.dart';
-import 'package:bciapplication/provider/taskProvider2.dart';
+import 'package:bciapplication/provider/Todo_provider.dart';
 
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/widget/TabBar.dart';
@@ -13,7 +13,7 @@ class ShowprogressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final taskprovider = Provider.of<TaskProvider2>(context);
+    final todoprovider = Provider.of<TodoProvider>(context);
     return Scaffold(
       backgroundColor: backgroundBlackColor,
       appBar: AppBar(
@@ -66,7 +66,7 @@ class ShowprogressScreen extends StatelessWidget {
                     );
                   },
                   child: TaskCard(
-                    number: taskprovider.completedTaskCount,
+                    number: todoprovider.completedTaskCount,
                     title: 'Completed',
                     imagePath: 'assets/completedLines.png',
                     cardColor: brandPrimaryColor,
@@ -105,7 +105,7 @@ class ShowprogressScreen extends StatelessWidget {
                                 ])));
                   },
                   child: TaskCard(
-                      number: taskprovider.incompletedTaskCount,
+                      number: todoprovider.notcompletedTaskCount,
                       title: 'Ongoing',
                       imagePath: 'assets/ongoingLines.png',
                       cardColor: backgroundWhiteColor,

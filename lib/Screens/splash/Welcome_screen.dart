@@ -1,3 +1,4 @@
+import 'package:bciapplication/Screens/onboardingPages/onboarding_page.dart';
 import 'package:bciapplication/Screens/registration/registration_screen.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/utils/string.dart';
@@ -75,7 +76,7 @@ class WelcomeScreen extends StatelessWidget {
                     height: 50,
                     child: CustomButton(
                         label: AppString.getstart,
-                        targetScreen: RegistrationScreen(),
+                        targetScreen: OnboardingPage(),
                         screenWidth: screenWidth,
                         screenHeight: screenHeight),
                   ),

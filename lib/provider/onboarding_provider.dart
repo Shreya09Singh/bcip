@@ -1,4 +1,5 @@
 import 'package:bciapplication/Screens/meditaion/meditaion_screen.dart';
+import 'package:bciapplication/Screens/registration/registration_screen.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/utils/string.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class OnboardingProvider extends ChangeNotifier {
       // Navigate to HomeScreen when last step is reached
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MeditaionScreen()),
+        MaterialPageRoute(builder: (context) => RegistrationScreen()),
       );
     }
   }

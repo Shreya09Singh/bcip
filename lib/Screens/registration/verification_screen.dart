@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bciapplication/Screens/registration/basic_information_screen.dart';
+import 'package:bciapplication/Screens/registration/sharedpreference.dart';
 import 'package:bciapplication/services/api/API_services.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/utils/string.dart';
@@ -37,6 +38,10 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
     );
   }
 
+  void onLoginSuccess(String phoneNumber) {
+    fetchAndStoreUserData(phoneNumber);
+  }
+
   void verifyOtp() async {
     String phoneNumber = widget.phoneNumber;
 
@@ -51,11 +56,14 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
       if (!mounted) return;
       if (isVerified) {
         showSnackBar("OTP verification successful!");
+
+        onLoginSuccess(phoneNumber);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  BasicInformationScreen()), // Replace with your next screen
+              builder: (context) => BasicInformationScreen(
+                    phoneNumber: phoneNumber,
+                  )), // Replace with your next screen
         );
       } else {
         showSnackBar("Invalid OTP. Please try again.");

@@ -1,3 +1,6 @@
+import 'package:bciapplication/Screens/note_module/doTaskwork.dart';
+import 'package:bciapplication/model/TodoModel.dart';
+import 'package:bciapplication/provider/Todo_provider.dart';
 import 'package:bciapplication/provider/taskProvider2.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/widget/FormatedDateWidget.dart';
@@ -18,14 +21,24 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   @override
+  void initState() {
+    super.initState();
+    Provider.of<TodoProvider>(context, listen: false).fetchTodos();
+  }
+
+  @override
   Widget build(BuildContext context) {
     DateTime selectedDate = DateTime.now();
     CalendarFormat calendarFormat = CalendarFormat.week; // Horizontal Scroll
-    final taskProvider = Provider.of<TaskProvider2>(context);
-    final notes = taskProvider.isToggle
-        ? taskProvider.completedTasks
-        : taskProvider.todayTasks;
-    print("Notes: $notes");
+    // final taskProvider = Provider.of<TaskProvider2>(context);
+    // final notes = taskProvider.isToggle
+    //     ? taskProvider.completedTasks
+    //     : taskProvider.todayTasks;
+
+    final todoprovider = Provider.of<TodoProvider>(context);
+    final notes = todoprovider.isToggle
+        ? todoprovider.completedTask
+        : todoprovider.todayTask;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -91,20 +104,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
               CustomElevatedButton(
                 buttonText: 'Today',
                 onPressed: () {
-                  taskProvider.setToday();
+                  todoprovider.setToday();
                 },
-                txtColor: taskProvider.istoday ? textPrimaryColor : textcolor,
+                txtColor: todoprovider.istoday ? textPrimaryColor : textcolor,
                 backgroundColor:
-                    taskProvider.istoday ? brandPrimaryColor : textPrimaryColor,
+                    todoprovider.istoday ? brandPrimaryColor : textPrimaryColor,
               ),
               CustomElevatedButton(
                 buttonText: 'Completed',
                 onPressed: () {
-                  taskProvider.setCompleted();
+                  todoprovider.setCompleted();
                 },
                 txtColor:
-                    taskProvider.isCompleted ? textPrimaryColor : textcolor,
-                backgroundColor: taskProvider.isCompleted
+                    todoprovider.isCompleted ? textPrimaryColor : textcolor,
+                backgroundColor: todoprovider.isCompleted
                     ? brandPrimaryColor
                     : textPrimaryColor,
               ),
@@ -126,23 +139,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     itemCount: notes.length,
                     itemBuilder: (context, index) {
                       final task = notes[index];
-                      final date =
-                          Formateddatewidget.formatedDate(task.dateTime);
+                      final date = Formateddatewidget.formatedDate(task.date);
 
                       return Padding(
                           padding: const EdgeInsets.only(
                               left: 30, right: 30, bottom: 10),
-                          child: TaskItemWidget(
-                            title: task.title,
-                            displayDate: date,
-                            timeOfDay: task.timeOfDay,
-                            isCompleted: task.isCompleted,
-                            onCheckboxChanged: (bool? value) {
-                              taskProvider.toggleTaskCompletion(
-                                  task); // No need for setState()
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => StopwatchScreen()));
                             },
-                            category: task.category,
-                            // icon: task.icons!,
+                            child: TaskItemWidget(
+                              title: task.title,
+                              displayDate: date,
+                              timeOfDay: task.time,
+                              isCompleted: task.isCompleted!,
+                              onCheckboxChanged: (bool? value) {
+                                todoprovider.toggleTaskCompletion(
+                                    task); // No need for setState()
+                              },
+                              category: task.type,
+                              // icon: task.icons!,
+                            ),
                           ));
                     },
                   ),

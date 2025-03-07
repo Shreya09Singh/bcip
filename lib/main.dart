@@ -1,11 +1,16 @@
+import 'package:bciapplication/Screens/meditaion/meditaion_screen.dart';
 import 'package:bciapplication/Screens/note_module/showProgress_screen.dart';
+import 'package:bciapplication/Screens/splash/Welcome_screen.dart';
+import 'package:bciapplication/provider/Todo_provider.dart';
+
+import 'package:bciapplication/provider/getsession_provider.dart';
+import 'package:bciapplication/provider/session_provider.dart';
 
 import 'package:bciapplication/provider/taskProvider2.dart';
 
 import 'package:bciapplication/provider/connection_provider.dart';
 
 import 'package:bciapplication/provider/onboarding_provider.dart';
-import 'package:bciapplication/provider/song_provider.dart';
 
 import 'package:flutter/material.dart';
 
@@ -28,7 +33,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider(create: (context) => ConnectionProvider()),
           ChangeNotifierProvider(create: (context) => TaskProvider2()),
-          ChangeNotifierProvider(create: (context) => SongProvider()),
+          ChangeNotifierProvider(create: (context) => TodoProvider()),
+          ChangeNotifierProvider(create: (context) => SessionProvider()),
+          ChangeNotifierProvider(create: (context) => GetsessionProvider()),
         ],
         child: MaterialApp(
           title: 'Flutter Demo',
@@ -38,12 +45,12 @@ class MyApp extends StatelessWidget {
           ),
           // home: ShowtaskScreen()
           // home: TodoListScreen(),
-          home: ShowprogressScreen(),
+          // home: ShowprogressScreen(),
           // home: TaskScreen(),
           // home: MeditaionScreen(),
           // home: Recomendedong(),
           // home: SearchGanaScreen(),
-          // home: WelcomeScreen(),
+          home: WelcomeScreen(),
           // home: MusicScreen(),
           // home: MusicPlayerScreenn(),
           // home: SearchScreen(),

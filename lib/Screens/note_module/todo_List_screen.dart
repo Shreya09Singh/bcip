@@ -1,5 +1,7 @@
 import 'package:bciapplication/Screens/note_module/Calender_screen.dart';
 import 'package:bciapplication/Screens/note_module/CatagoryScreen.dart';
+import 'package:bciapplication/model/TodoModel.dart';
+import 'package:bciapplication/provider/Todo_provider.dart';
 //
 
 import 'package:bciapplication/provider/taskProvider2.dart';
@@ -40,6 +42,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<ConnectionProvider>(context);
     final taskProvider = Provider.of<TaskProvider2>(context);
+    final todoprovider = Provider.of<TodoProvider>(context);
+
     List<IconData> iconData = [
       Icons.school,
       Icons.health_and_safety,
@@ -350,23 +354,18 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                                       .text.isNotEmpty ||
                                                   catagoryController
                                                       .text.isNotEmpty) {
-                                                Task newtask = Task(
+                                                TodoModel newtodo = TodoModel(
                                                     title: titleController.text,
-                                                    dateTime:
-                                                        dateeController.text,
-                                                    category:
-                                                        catagoryController.text,
-                                                    timeOfDay:
-                                                        timeController.text);
+                                                    date: dateeController.text,
+                                                    time: timeController.text,
+                                                    type: catagoryController
+                                                        .text);
+                                                todoprovider.addTodo(newtodo);
 
-                                                taskProvider.addTask(newtask);
-
-                                                print(catagoryController.text);
                                                 titleController.clear();
                                                 dateeController.clear();
                                                 timeController.clear();
                                                 catagoryController.clear();
-                                                print('save');
                                               }
                                             },
                                             buttonText: 'Create Task')),

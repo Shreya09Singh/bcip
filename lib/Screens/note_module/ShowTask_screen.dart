@@ -1,4 +1,6 @@
 import 'package:bciapplication/model/TaskModel.dart';
+import 'package:bciapplication/model/TodoModel.dart';
+import 'package:bciapplication/provider/Todo_provider.dart';
 import 'package:bciapplication/provider/taskProvider2.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,15 +24,15 @@ class ShowtaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final taskProvider = Provider.of<TaskProvider2>(context, listen: false);
+    final todoprovider = Provider.of<TodoProvider>(context, listen: false);
 
-    List<Task> tasks = [];
+    List<TodoModel> tasks = [];
     if (filter == "All") {
-      tasks = taskProvider.tasks;
+      tasks = todoprovider.todoList;
     } else if (filter == "Completed") {
-      tasks = taskProvider.completedTasks;
+      tasks = todoprovider.completedTask;
     } else if (filter == "Ongoing") {
-      tasks = taskProvider.notCompletedTasks;
+      tasks = todoprovider.notCompletedTask;
     }
 
     return Scaffold(
@@ -48,12 +50,12 @@ class ShowtaskScreen extends StatelessWidget {
 
                   return TaskItemWidget2(
                       title: task.title,
-                      displayDate: task.dateTime,
-                      timeOfDay: task.timeOfDay,
-                      isCompleted: task.isCompleted,
-                      category: task.category,
+                      displayDate: task.date,
+                      timeOfDay: task.time,
+                      isCompleted: task.isCompleted!,
+                      category: task.type,
                       // icon: task.icons!,
-                      ongoing: !task.isCompleted);
+                      ongoing: !task.isCompleted!);
                 }),
           ),
           Row(

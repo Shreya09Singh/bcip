@@ -2,48 +2,55 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:bciapplication/widget/TabBar.dart';
+import 'package:bciapplication/Screens/registration/sharedpreference.dart';
+import 'package:bciapplication/provider/getsession_provider.dart';
+import 'package:bciapplication/services/getsession_api_services.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:bciapplication/Screens/progress/TabBar_screen.dart';
-import 'package:bciapplication/Screens/progress/day_view_screen.dart';
 import 'package:bciapplication/Screens/session/statCard.dart';
+import 'package:bciapplication/provider/session_provider.dart';
+import 'package:bciapplication/services/api/API_services.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/widget/onboarding_button.dart';
-import 'package:flutter/material.dart';
 
 class SessionScreen extends StatefulWidget {
   final TextEditingController controller;
+  final String sessionName;
+  final String sessionId;
+  final double thresholdvalue;
+
   const SessionScreen({
     Key? key,
     required this.controller,
+    required this.sessionName,
+    required this.sessionId,
+    required this.thresholdvalue,
   }) : super(key: key);
+
   @override
   _SessionScreenState createState() => _SessionScreenState();
 }
 
 class _SessionScreenState extends State<SessionScreen> {
-  int remainingTime = 0; // 5 minutes in seconds
+  final APIService _apiService = APIService();
+  final GetsessionApiServices getsessionApiServices = GetsessionApiServices();
+  int remainingTime = 0;
   Timer? timer;
   final Random _random = Random();
   int _randomNumber = 0;
-
-  void meditationTimer() {
-    timer = Timer.periodic(Duration(seconds: 2), (Timer t) {
-      generateRandomNumber();
-    });
-  }
-
-  void generateRandomNumber() {
-    setState(() {
-      _randomNumber =
-          _random.nextInt(100); // Generates a random number between 0 and 99
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     startTimer();
     meditationTimer();
+  }
+
+  int getRemainingTime() {
+    return remainingTime;
   }
 
   void startTimer() {
@@ -60,26 +67,89 @@ class _SessionScreenState extends State<SessionScreen> {
             remainingTime--;
           });
         } else {
-          timer.cancel();
+          stopTimer(); // ✅ Stop timer when it reaches 0
         }
       });
     }
   }
 
-  void timerstop() {
-    timerstop();
+  void meditationTimer() {
+    Timer.periodic(Duration(seconds: 2), (Timer t) {
+      // generateRandomNumber();
+    });
+  }
+
+  // void generateRandomNumber() {
+  //   setState(() {
+  //     _randomNumber = _random.nextInt(100); // Generates a number between 0-99
+  //   });
+  // }
+
+  List<int> generateRandomFocusValues(int count) {
+    Random random = Random();
+    return List.generate(count, (_) => random.nextInt(100) + 1);
+  }
+
+  void stopTimer() {
+    if (timer != null) {
+      timer!.cancel(); // ✅ Stop the timer
+      timer = null; // ✅ Avoid memory leaks
+      print("Timer stopped at $remainingTime seconds");
+    }
   }
 
   @override
   void dispose() {
-    timer?.cancel();
+    stopTimer(); // ✅ Ensure timer is stopped when widget is disposed
     super.dispose();
+  }
+
+  Future<void> getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id');
+  }
+
+  Future<void> addsessionData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_id');
+
+    if (userId == null) return;
+
+    String sessionname = widget.sessionName;
+    String sessionid = widget.sessionId;
+    int actualduration = remainingTime;
+    String selectedduration = widget.controller.text;
+    List<int> focusvalue = generateRandomFocusValues(10);
+    double selectedthresholdvalue = widget.thresholdvalue;
+
+    bool isSuccess = await _apiService.addUserSession(
+        userId: userId,
+        sessionId: sessionid,
+        sessionName: sessionname,
+        actualDuration: actualduration,
+        selectedDuration: int.tryParse(selectedduration) ?? 0,
+        selectedThreshold: selectedthresholdvalue,
+        focusvalue: focusvalue);
+
+    if (!mounted) return;
+
+    if (isSuccess) {
+      print("User added successfully!");
+    } else {
+      print("Failed to add user. Try again.");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    checkSavedData();
+    print(widget.controller.text);
+    final sessionProvider =
+        Provider.of<SessionProvider>(context, listen: false);
+    final getsessionprovider = Provider.of<GetsessionProvider>(context);
+
     double progress =
-        remainingTime / (int.tryParse(widget.controller.text)! * 60);
+        remainingTime / ((int.tryParse(widget.controller.text) ?? 1) * 60);
 
     return Scaffold(
       appBar: AppBar(
@@ -97,18 +167,15 @@ class _SessionScreenState extends State<SessionScreen> {
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Column(
           children: [
-            SizedBox(
-              height: 5,
-            ),
+            SizedBox(height: 5),
             Align(
               alignment: Alignment.topCenter,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Circular Progress Indicator
                   SizedBox(
-                    width: 230,
-                    height: 230,
+                    width: 210,
+                    height: 210,
                     child: CircularProgressIndicator(
                       value: progress,
                       strokeWidth: 8,
@@ -117,9 +184,6 @@ class _SessionScreenState extends State<SessionScreen> {
                           AlwaysStoppedAnimation<Color>(brandPrimaryColor),
                     ),
                   ),
-                  // Circular Background Glow
-
-                  // Timer Text
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -131,44 +195,35 @@ class _SessionScreenState extends State<SessionScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Timer",
-                        style: TextStyle(
-                            color: textPrimaryColor,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
-                      ),
+                      SizedBox(height: 20),
+                      Text("Timer",
+                          style: TextStyle(
+                              color: textPrimaryColor,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
-
-            // Now Playing
+            SizedBox(height: 25),
             Align(
               alignment: Alignment.topLeft,
-              child: Text(
-                "Now Playing : White noise",
-                style: TextStyle(
-                    color: textPrimaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
+              child: Text("Now Playing : ${widget.sessionName}",
+                  style: TextStyle(
+                      color: textPrimaryColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold)),
             ),
             SizedBox(height: 20),
-
-            // Waveform (Placeholder)
             SizedBox(
                 height: 50,
-                width: 400,
-                child: Image.asset('assets/waves.png', fit: BoxFit.cover)),
+                width: double.infinity,
+                child: Image.asset(
+                  'assets/waves.png',
+                  fit: BoxFit.cover,
+                )),
             SizedBox(height: 30),
-
-            // Statistics Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -190,32 +245,33 @@ class _SessionScreenState extends State<SessionScreen> {
               ],
             ),
             SizedBox(height: 30),
-
-            // Meditation Count
+            Text("Meditation time",
+                style: TextStyle(
+                    color: textPrimaryColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold)),
             Text(
-              "Meditation time",
-              style: TextStyle(
-                  color: textPrimaryColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "$_randomNumber",
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+                getsessionprovider.isLoading
+                    ? "Loading..."
+                    : "${getsessionprovider.totalprogress}",
+                style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
-
-            // Stop and Next Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                OnboardingButton(onPressed: () {}, buttonText: 'Stop'),
                 OnboardingButton(
                     onPressed: () {
+                      sessionProvider.stop();
+                      stopTimer();
+                      addsessionData();
+                    },
+                    buttonText: 'Stop'),
+                OnboardingButton(
+                    onPressed: () {
+                      getsessionprovider.fetchUser(widget.controller.text);
                       Navigator.push(
                           context,
                           MaterialPageRoute(

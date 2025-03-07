@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bciapplication/Screens/progress/breath_exercise_card.dart';
 import 'package:bciapplication/Screens/progress/pie_chart.dart';
+import 'package:bciapplication/provider/getsession_provider.dart';
 import 'package:bciapplication/widget/onboarding_button.dart';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import 'package:bciapplication/utils/constants.dart';
+import 'package:provider/provider.dart';
 
 class DayViewScreen extends StatefulWidget {
   final int progress; // Progress percentage
@@ -25,27 +27,77 @@ class DayViewScreen extends StatefulWidget {
 class _DayViewScreenState extends State<DayViewScreen> {
   @override
   Widget build(BuildContext context) {
+    final getsessionprovider = Provider.of<GetsessionProvider>(context);
+
+    double greenval = 0;
+    int sec = 0;
+    String sessionName1 = "";
+    String sessionName2 = "";
+    int progresss1 = 0;
+    int progresss2 = 0;
+    double pro = 0;
+    if (!getsessionprovider.isLoading &&
+        getsessionprovider.user != null &&
+        getsessionprovider.user!.sessions.isNotEmpty) {
+      greenval =
+          getsessionprovider.user!.sessions[0].selectedThreshold.toDouble();
+      sec = getsessionprovider.user!.sessions[0].actualDuration;
+      // Ensure the index does not exceed the list length
+      int sessionIndex = (getsessionprovider.user?.sessions.length ?? 0) > 2
+          ? 2
+          : (getsessionprovider.user?.sessions.length ?? 0) > 1
+              ? 1
+              : 0;
+
+// Access session data safely
+      progresss1 =
+          getsessionprovider.user?.sessions[sessionIndex].actualDuration ?? 0;
+      progresss2 =
+          getsessionprovider.user?.sessions[sessionIndex].listenDuration ?? 0;
+
+      if (progresss2 > 0) {
+        pro = (progresss1.toDouble() /
+            progresss2.toDouble()); // Convert to double
+      }
+
+      if (getsessionprovider.user!.sessions.length > 1) {
+        sessionName1 = getsessionprovider.user!.sessions[0].sessionName;
+        sessionName2 = getsessionprovider.user!.sessions[1].sessionName;
+      } else {
+        sessionName1 = getsessionprovider.user!.sessions[0].sessionName;
+        sessionName2 = "No Session Available";
+      }
+    }
+
+    int guidedsec = progresss1 ~/ 60;
+    int remainingSeconds =
+        progresss1 % 60; // Correcting leftover seconds calculation
+    int unguidedsec = progresss2 ~/ 60;
+    int unguidedremainingSeconds = progresss2 % 60;
+
+    int totalguide = guidedsec + unguidedsec;
+    int totalremaining = remainingSeconds + unguidedremainingSeconds;
+
     return Scaffold(
       backgroundColor: backgroundBlackColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
-              height: 15,
-            ),
+            const SizedBox(height: 15),
             Align(
               alignment: Alignment.topCenter,
               child: Container(
                 height: 200,
                 width: 300,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Color(0xFF334155)),
+                  borderRadius: BorderRadius.circular(20),
+                  color: const Color(0xFF334155),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      'Feb 02, 2025',
+                      widget.date,
                       style: TextStyle(
                           fontSize: 18,
                           color: textPrimaryColor,
@@ -56,43 +108,37 @@ class _DayViewScreenState extends State<DayViewScreen> {
                       children: [
                         IconButton(
                           onPressed: () {},
-                          icon: Icon(Icons.chevron_left, color: Colors.white),
+                          icon: const Icon(Icons.chevron_left,
+                              color: Colors.white),
                         ),
                         Stack(
                           alignment: Alignment.center,
                           children: [
                             Container(
-                              width: 150, // Slightly bigger than the indicator
+                              width: 150,
                               height: 140,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black38
-                                        .withOpacity(0.8), // Glowing effect
-                                    blurRadius: 20, // How much blur
-                                    spreadRadius:
-                                        8, // How far the shadow spreads
+                                    color: Colors.black38.withOpacity(0.8),
+                                    blurRadius: 20,
+                                    spreadRadius: 8,
                                   ),
                                 ],
                               ),
                             ),
-                            // Outer Circle
                             CircularPercentIndicator(
                               radius: 73,
                               lineWidth: 5.0,
-                              percent: 1, // Always full to create an outer ring
-
-                              // backgroundColor: Colors.white.withOpacity(0.2),
+                              percent: 1,
                               progressColor: Colors.black,
                               circularStrokeCap: CircularStrokeCap.round,
                             ),
-                            // Inner Circle (Actual Progress)
                             CircularPercentIndicator(
-                              // fillColor: Colors.black,
                               radius: 66,
                               lineWidth: 13.0,
-                              percent: widget.progress / 100,
+                              percent: (pro / 100),
                               animation: true,
                               animationDuration: 1200,
                               linearGradient: LinearGradient(colors: [
@@ -103,20 +149,19 @@ class _DayViewScreenState extends State<DayViewScreen> {
                               ]),
                               backgroundColor:
                                   const Color.fromARGB(255, 203, 200, 200),
-                              // progressColor: Colors.blueAccent,
                               circularStrokeCap: CircularStrokeCap.round,
                               center: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "${widget.progress}",
-                                    style: TextStyle(
+                                    " ${pro.toInt()}", // Show only rounded integer percentage
+                                    style: const TextStyle(
                                       fontSize: 40,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
                                   ),
-                                  Text(
+                                  const Text(
                                     "%",
                                     style: TextStyle(
                                       fontSize: 25,
@@ -130,7 +175,8 @@ class _DayViewScreenState extends State<DayViewScreen> {
                         ),
                         IconButton(
                           onPressed: () {},
-                          icon: Icon(Icons.chevron_right, color: Colors.white),
+                          icon: const Icon(Icons.chevron_right,
+                              color: Colors.white),
                         ),
                       ],
                     ),
@@ -138,16 +184,14 @@ class _DayViewScreenState extends State<DayViewScreen> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 SizedBox(
                   width: 165,
                   child: CustomPieChart(
                     redValue: 40,
-                    greenValue: 60,
+                    greenValue: greenval,
                     showPercentage: true,
                   ),
                 ),
@@ -165,28 +209,22 @@ class _DayViewScreenState extends State<DayViewScreen> {
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      LegendWidget(
+                      const SizedBox(height: 20),
+                      const LegendWidget(
                           color: Colors.lightGreen,
-                          text: 'crossed 50 threshold value'),
-                      SizedBox(
-                        height: 6,
-                      ),
-                      LegendWidget(
+                          text: 'Crossed 50 threshold value'),
+                      const SizedBox(height: 6),
+                      const LegendWidget(
                           color: Colors.red,
-                          text: ' did not cross 50 threshold value'),
+                          text: 'Did not cross 50 threshold value'),
                     ],
                   ),
                 )
               ],
             ),
-            SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5),
             Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -204,7 +242,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
                       color: brandPrimaryColor,
                       child: Center(
                           child: Text(
-                        '4:27 min',
+                        "$totalguide:$totalremaining min",
                         style: TextStyle(
                             color: textPrimaryColor,
                             fontWeight: FontWeight.bold,
@@ -216,56 +254,46 @@ class _DayViewScreenState extends State<DayViewScreen> {
               ),
             ),
             BreathExerciseCard(
-              title: "Lion's Breath",
+              title: sessionName1,
               firstIcon: Icons.mic,
               firstText: 'Guided',
               secondIcon: Icons.alarm,
-              secondText: '02:27 min',
+              secondText: "$guidedsec:$remainingSeconds min",
               textColor: textPrimaryColor,
               cardColor: Colors.blue,
             ),
-            SizedBox(
-              height: 7,
-            ),
+            const SizedBox(height: 7),
             BreathExerciseCard(
-              title: "Gentle Rain",
+              title: sessionName2,
               firstIcon: Icons.mic_off,
               firstText: 'Un-guided',
               secondIcon: Icons.alarm,
-              secondText: '02:00 min',
+              secondText: "$unguidedsec:$unguidedremainingSeconds min",
               textColor: textPrimaryColor,
               cardColor: Colors.blue,
             ),
-            SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             SizedBox(
                 height: 70,
                 width: 320,
                 child: Card(
-                  color: Color(0xFF334155),
+                  color: const Color(0xFF334155),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(
-                          left: 10,
-                        ),
+                        padding: const EdgeInsets.only(left: 10),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'My daily Goal',
-                              style: TextStyle(
-                                  color: textPrimaryColor, fontSize: 17),
-                            ),
-                            Text(
-                              '10 quiet min',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimaryColor,
-                                  fontSize: 20),
-                            ),
+                            Text('My daily Goal',
+                                style: TextStyle(
+                                    color: textPrimaryColor, fontSize: 17)),
+                            Text('10 quiet min',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: textPrimaryColor,
+                                    fontSize: 20)),
                           ],
                         ),
                       ),
@@ -278,7 +306,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
                       )
                     ],
                   ),
-                ))
+                )),
           ],
         ),
       ),

@@ -1,8 +1,16 @@
-import 'package:bciapplication/utils/constants.dart';
-import 'package:flutter/material.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+
+import 'package:bciapplication/utils/constants.dart';
+
 class FrequencyVisualizer extends StatefulWidget {
+  final Function(double) onThresholdChanged; // Callback function
+  const FrequencyVisualizer({
+    Key? key,
+    required this.onThresholdChanged,
+  }) : super(key: key);
   @override
   _FrequencyVisualizerState createState() => _FrequencyVisualizerState();
 }
@@ -32,7 +40,7 @@ class _FrequencyVisualizerState extends State<FrequencyVisualizer> {
         children: [
           // Slider
           Padding(
-            padding: const EdgeInsets.only(top: 7, bottom: 7),
+            padding: const EdgeInsets.only(top: 0, bottom: 0),
             child: Column(
               children: [
                 // Text(
@@ -51,8 +59,13 @@ class _FrequencyVisualizerState extends State<FrequencyVisualizer> {
                   onChanged: (value) {
                     setState(() {
                       sliderValue = value;
+                      widget.onThresholdChanged(sliderValue);
                       _generateFrequencyData(); // Update frequency data
                     });
+                  },
+                  onChangeEnd: (value) {
+                    widget.onThresholdChanged(
+                        value); // Only updates when sliding stops
                   },
                 ),
               ],
@@ -60,9 +73,9 @@ class _FrequencyVisualizerState extends State<FrequencyVisualizer> {
           ),
           // Frequency Chart
           SizedBox(
-            height: 40,
+            height: 35,
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.only(left: 20, right: 20),
               child: CustomPaint(
                 painter: FrequencyPainter(frequencyData),
                 child: Container(), // Placeholder for painting

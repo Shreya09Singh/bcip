@@ -93,9 +93,9 @@ class WeekChart extends StatelessWidget {
               child: SfCartesianChart(
                 plotAreaBorderColor: Colors.transparent,
                 primaryYAxis: NumericAxis(
-                  maximum: 12,
-                  minimum: 2,
-                  interval: 2,
+                  maximum: 100,
+                  minimum: 0,
+                  interval: 20,
                   labelStyle: TextStyle(
                     color: Colors.white, // Color for Y-axis labels
                     fontSize: 10, // Optional: Set font size
