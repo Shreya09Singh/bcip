@@ -57,7 +57,7 @@ class WeekChart extends StatelessWidget {
             SizedBox(
               height: 60,
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -89,7 +89,7 @@ class WeekChart extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 160,
+              height: 120,
               child: SfCartesianChart(
                 plotAreaBorderColor: Colors.transparent,
                 primaryYAxis: NumericAxis(

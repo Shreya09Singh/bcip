@@ -24,8 +24,8 @@ class StatCard extends StatelessWidget {
       children: [
         Image.asset(
           imagePath,
-          width: screenWidth * 0.2, // 20% of screen width
-          height: screenWidth * 0.2, // Keep square aspect ratio
+          width: screenWidth * 0.15, // 20% of screen width
+          height: screenWidth * 0.15, // Keep square aspect ratio
           fit: BoxFit.contain,
         ),
         SizedBox(height: screenHeight * 0.015), // Responsive spacing

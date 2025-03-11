@@ -1,10 +1,10 @@
 import 'package:bciapplication/Screens/progress/calculation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:bciapplication/Screens/progress/breath_exercise_card.dart';
 import 'package:bciapplication/Screens/progress/pie_chart.dart';
-import 'package:bciapplication/provider/getsession_provider.dart';
+
 import 'package:bciapplication/widget/onboarding_button.dart';
 import 'package:bciapplication/utils/constants.dart';
 
@@ -26,7 +26,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
   @override
   Widget build(BuildContext context) {
     final sessionhelper = SessionHelper(context);
-    final getsessionprovider = Provider.of<GetsessionProvider>(context);
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -37,7 +37,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
           child: Column(
             children: [
-              SizedBox(height: screenHeight * 0.02),
+              // SizedBox(height: screenHeight * 0.02),
               Align(
                 alignment: Alignment.topCenter,
                 child: Container(
@@ -76,6 +76,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
+                                      // ignore: deprecated_member_use
                                       color: Colors.black38.withOpacity(0.8),
                                       blurRadius: 20,
                                       spreadRadius: 8,
@@ -139,7 +140,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.02),
+              // SizedBox(height: screenHeight * 0.02),
               Row(
                 children: [
                   SizedBox(
@@ -177,7 +178,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
                   )
                 ],
               ),
-              SizedBox(height: screenHeight * 0.02),
+              // SizedBox(height: screenHeight * 0.015),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Row(
@@ -194,7 +195,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
                     Card(
                       color: brandPrimaryColor,
                       child: Padding(
-                        padding: EdgeInsets.all(screenWidth * 0.025),
+                        padding: EdgeInsets.all(screenWidth * 0.020),
                         child: Text(
                           '${sessionhelper.formattedTime} min',
                           style: TextStyle(
@@ -208,7 +209,7 @@ class _DayViewScreenState extends State<DayViewScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: screenHeight * 0.015),
+              SizedBox(height: screenHeight * 0.010),
               BreathExerciseCard(
                 title: sessionhelper.sessionName1,
                 firstIcon: Icons.mic,
@@ -230,11 +231,11 @@ class _DayViewScreenState extends State<DayViewScreen> {
               ),
               SizedBox(height: screenHeight * 0.015),
               SizedBox(
-                width: screenWidth * 0.80,
+                width: screenWidth * 0.85,
                 child: Card(
                   color: const Color(0xFF334155),
                   child: Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.03),
+                    padding: EdgeInsets.all(screenWidth * 0.025),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

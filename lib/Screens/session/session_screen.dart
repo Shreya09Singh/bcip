@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bciapplication/widget/customSnakebar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,11 +34,55 @@ class SessionScreen extends StatefulWidget {
 
 class _SessionScreenState extends State<SessionScreen> {
   final APIService _apiService = APIService();
+  Timer? timer;
+  int remainingTime = 0;
+  int listentime = 0;
+  double progress = 1.0;
+  // int totaltime = int.parse(widget.controller.text);
 
   @override
   void initState() {
     super.initState();
+    startTimer();
     getUserData();
+  }
+
+  void startTimer() {
+    int min = int.tryParse(widget.controller.text) ?? 0;
+    int seconds = min * 60;
+    if (seconds > 0) {
+      setState(() {
+        remainingTime = seconds;
+      });
+
+      timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        if (remainingTime > 0) {
+          setState(() {
+            remainingTime--;
+            progress = remainingTime / seconds;
+          });
+        } else {
+          timer.cancel();
+        }
+      });
+    }
+  }
+
+  void stopTimer() {
+    timer?.cancel();
+    int totaltime =
+        (int.tryParse(widget.controller.text) ?? 0) * 60; // Convert min to sec
+    int elapshedtime = totaltime - remainingTime;
+
+    if (mounted) {
+      // Only update UI if the widget is still in the tree
+      setState(() {
+        listentime = elapshedtime;
+      });
+    }
+// Refresh UI
+    print('listentime');
+    print(listentime);
   }
 
   Future<void> getUserData() async {
@@ -63,7 +110,7 @@ class _SessionScreenState extends State<SessionScreen> {
       userId: userId,
       sessionId: widget.sessionId,
       sessionName: widget.sessionName,
-      actualDuration: timerprovider.remainingTime,
+      actualDuration: listentime,
       selectedDuration: int.tryParse(widget.controller.text) ?? 0,
       selectedThreshold: widget.thresholdvalue,
       focusvalue: timerprovider.randomNumbers,
@@ -71,13 +118,11 @@ class _SessionScreenState extends State<SessionScreen> {
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(isSuccess
+    CustomSnackBar.show(
+        context,
+        isSuccess
             ? "Session added successfully!"
-            : "Failed to add session. Try again."),
-      ),
-    );
+            : "Failed to add session. Try again.");
   }
 
   @override
@@ -85,9 +130,7 @@ class _SessionScreenState extends State<SessionScreen> {
     final sessionProvider =
         Provider.of<SessionProvider>(context, listen: false);
     final getsessionprovider = Provider.of<GetsessionProvider>(context);
-    final provider = Provider.of<TimerProvider>(context);
 
-    // Get screen width & height for responsiveness
     final size = MediaQuery.of(context).size;
     final width = size.width;
     final height = size.height;
@@ -123,7 +166,7 @@ class _SessionScreenState extends State<SessionScreen> {
                           width: width * 0.55, // 55% of screen width
                           height: width * 0.55, // Maintain circular shape
                           child: CircularProgressIndicator(
-                            value: provider.progressindicator,
+                            value: progress,
                             strokeWidth: 8,
                             backgroundColor: Colors.grey.shade800,
                             valueColor: const AlwaysStoppedAnimation<Color>(
@@ -134,7 +177,7 @@ class _SessionScreenState extends State<SessionScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "${(provider.remainingTime ~/ 60).toString().padLeft(2, '0')}:${(provider.remainingTime % 60).toString().padLeft(2, '0')}",
+                              "${(remainingTime ~/ 60).toString().padLeft(2, '0')}:${(remainingTime % 60).toString().padLeft(2, '0')}",
                               style: TextStyle(
                                 fontSize: width * 0.1, // Dynamic font size
                                 fontWeight: FontWeight.bold,
@@ -211,9 +254,7 @@ class _SessionScreenState extends State<SessionScreen> {
                   children: [
                     OnboardingButton(
                         onPressed: () {
-                          setState(() {
-                            provider.stopTimer();
-                          });
+                          stopTimer();
                           sessionProvider.pauseAudio();
                           addsessionData();
                         },

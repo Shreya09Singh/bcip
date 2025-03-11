@@ -23,49 +23,66 @@ class BreathExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
+      padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.05), // Dynamic padding
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height: 90,
-            width: 90,
+            height: screenWidth * 0.2, // 20% of screen width
+            width: screenWidth * 0.2,
             child: Card(
-              color: cardColor, // Dynamic card color
-              child: Image.network(
+              color: cardColor,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8), // Rounded corners
+                child: Image.network(
+                  'https://i.ytimg.com/vi/jv_uolrknjA/maxresdefault.jpg',
                   fit: BoxFit.cover,
-                  'https://i.ytimg.com/vi/jv_uolrknjA/maxresdefault.jpg'),
-            ),
-          ),
-          SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Aligns text to left
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  GuidedWidget(
-                    icon: firstIcon,
-                    textColor: textColor,
-                    text: firstText,
+            ),
+          ),
+          SizedBox(width: screenWidth * 0.03), // Dynamic spacing
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize:
+                        screenWidth * 0.045, // Adjust based on screen width
+                    fontWeight: FontWeight.bold,
                   ),
-                  SizedBox(width: 10),
-                  GuidedWidget(
-                    icon: secondIcon,
-                    textColor: textColor,
-                    text: secondText,
-                  )
-                ],
-              ),
-            ],
+                ),
+                SizedBox(height: screenWidth * 0.02), // Dynamic spacing
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GuidedWidget(
+                        icon: firstIcon,
+                        textColor: textColor,
+                        text: firstText,
+                        fontSize: screenWidth * 0.035,
+                      ),
+                    ),
+                    Expanded(
+                      child: GuidedWidget(
+                        icon: secondIcon,
+                        textColor: textColor,
+                        text: secondText,
+                        fontSize: screenWidth * 0.035,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -73,7 +90,7 @@ class BreathExerciseCard extends StatelessWidget {
   }
 }
 
-// GuidedWidget remains the same
+// GuidedWidget remains the same but with dynamic font size
 class GuidedWidget extends StatelessWidget {
   final IconData icon;
   final Color textColor;
@@ -85,7 +102,7 @@ class GuidedWidget extends StatelessWidget {
     required this.icon,
     required this.textColor,
     required this.text,
-    this.fontSize = 14,
+    this.fontSize = 13,
   }) : super(key: key);
 
   @override
@@ -95,13 +112,17 @@ class GuidedWidget extends StatelessWidget {
         Icon(
           icon,
           color: brandPrimaryColor,
+          size: fontSize * 1.5, // Adjust icon size dynamically
         ),
         SizedBox(width: 5),
-        Text(
-          text,
-          style: TextStyle(
-            color: textColor,
-            fontSize: fontSize,
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontSize: fontSize,
+            ),
+            overflow: TextOverflow.ellipsis, // Prevents overflow
           ),
         ),
       ],

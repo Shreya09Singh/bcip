@@ -41,7 +41,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   final List<String> categories = ["University", "Health", "Music", "Work"];
   Widget build(BuildContext context) {
     final provider = Provider.of<ConnectionProvider>(context);
-    final taskProvider = Provider.of<TaskProvider2>(context);
+    // final taskProvider = Provider.of<TaskProvider2>(context);
     final todoprovider = Provider.of<TodoProvider>(context);
 
     List<IconData> iconData = [
@@ -168,8 +168,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                   print("here is cat");
                                   print(catagoryController.text);
 
-                                  taskProvider
-                                      .selectCategory(categories[index]);
+                                  todoprovider
+                                      .fetchTodostype(categories[index]);
+                                  // taskProvider
+                                  //     .selectCategory(categories[index]);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(

@@ -1,6 +1,3 @@
-import 'package:bciapplication/Screens/meditaion/meditaion_screen.dart';
-import 'package:bciapplication/Screens/note_module/showProgress_screen.dart';
-import 'package:bciapplication/Screens/note_module/todo_List_screen.dart';
 import 'package:bciapplication/Screens/splash/Welcome_screen.dart';
 import 'package:bciapplication/provider/Todo_provider.dart';
 

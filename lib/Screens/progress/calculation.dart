@@ -25,6 +25,8 @@ class SessionHelper {
   late num totalthresholdvalue;
   late List<WeekData> chartdata;
   late List<int> focusvalues;
+  late double averageweekprogress;
+  late double averagemonthprogress;
   // late num lowthresholdvalue;
   // late num lowval;
   SessionHelper(this.context) {
@@ -48,9 +50,10 @@ class SessionHelper {
     overThresholdCount = 1;
     overThresholdValue = [];
     chartdata = [];
-    // lowval = 0;
+    averageweekprogress = 0.0;
+    averagemonthprogress = 0.0;
     focusvalues = [];
-    // lowthresholdvalue = 0;
+
     final Random random = Random();
     if (!getSessionProvider.isLoading &&
         getSessionProvider.user != null &&
@@ -66,18 +69,38 @@ class SessionHelper {
           getSessionProvider.user!.sessions[sessionIndex].listenDuration;
 
       int selectedSec = selectedTime * 60;
-      int totalListenSec = selectedSec - listenTime;
-      // int totalthresholdval =
-      //     focusvalues.isNotEmpty ? focusvalues.reduce((a, b) => a + b) : 0;
+      // int totalListenSec = selectedSec - listenTime;
 
-      previoustime =
-          getSessionProvider.user!.sessions[sessionIndex].actualDuration;
+      previoustime = (sessionIndex > 0)
+          ? getSessionProvider.user!.sessions[sessionIndex - 1].actualDuration
+          : getSessionProvider.user!.sessions[sessionIndex]
+              .actualDuration; // Default value if there's no previous session
 
-      if (totalListenSec > 0) {
-        progress = totalListenSec.toDouble() / selectedSec.toDouble();
+      if (listenTime > 0) {
+        progress = listenTime.toDouble() / selectedSec.toDouble();
+      } else {
+        progress = 0.0;
       }
 
       if (getSessionProvider.user!.sessions.length > 1) {
+        //////////last 7 days
+        List<int> last7DaysDurations = getSessionProvider.user!.sessions
+            .take(7) // Take only the last 7 durations
+            .map(
+                (session) => session.actualDuration) // Extract actual durations
+            .toList();
+
+        averageweekprogress = calculateAverageDuration(last7DaysDurations);
+
+////////////////lats30days
+        List<int> last30DaysDurations = getSessionProvider.user!.sessions
+            .take(30) // Take only the last 30 durations
+            .map(
+                (session) => session.actualDuration) // Extract actual durations
+            .toList();
+
+        averagemonthprogress = calculateAverageDuration(last30DaysDurations);
+
         sessionName1 =
             getSessionProvider.user!.sessions[sessionIndex].sessionName;
         sessionName2 =
@@ -86,16 +109,13 @@ class SessionHelper {
             getSessionProvider.user!.sessions[sessionIndex].overThresholdValues;
         overThresholdCount =
             getSessionProvider.user!.sessions[sessionIndex].overThresholdCount;
-        // int lowthresholdvalue = guidedTime = totalListenSec;
+
         unguidedTime = getSessionProvider
                 .user!.sessions[sessionIndex - 1].actualDuration -
             getSessionProvider.user!.sessions[sessionIndex - 1].listenDuration;
 
         guidedTime =
-            getSessionProvider.user!.sessions[sessionIndex].actualDuration -
-                getSessionProvider.user!.sessions[sessionIndex].listenDuration;
-
-        // getSessionProvider.user!.sessions[sessionIndex].listenDuration;
+            getSessionProvider.user!.sessions[sessionIndex].actualDuration;
 
         focusvalues =
             getSessionProvider.user!.sessions[sessionIndex].focusValues;
@@ -128,38 +148,16 @@ class SessionHelper {
         sessionName2 = "No Session Available";
         overThresholdValue = [];
         overThresholdCount = 1;
-        // focusvalues = [];
       }
     }
-
-    // void _populateChartData() {
-    //   final List<String> weekDays = [
-    //     'Sun',
-    //     'Mon',
-    //     'Tue',
-    //     'Wed',
-    //     'Thu',
-    //     'Fri',
-    //     'Sat'
-    //   ];
-
-    //   for (int i = 0; i < 7; i++) {
-    //     int value;
-    //     if (i < focusvalues.length) {
-    //       value = focusvalues[i];
-    //     } else {
-    //       // Generate a random value between 0 and 100
-    //       value = random.nextInt(101);
-    //     }
-    //     chartData.add(WeekData(weekDays[i], value));
-    //   }
-    // }
 
     int totalOverThreshold = overThresholdValue.isNotEmpty
         ? overThresholdValue.reduce((a, b) => a + b)
         : 30;
 
-    thresholdPercentage = (totalOverThreshold / overThresholdCount).toInt();
+    thresholdPercentage = (overThresholdCount > 0)
+        ? (totalOverThreshold / overThresholdCount).toInt()
+        : totalOverThreshold; // Default value when count is zero
 
     int totalSeconds = guidedTime + unguidedTime;
     Duration duration = Duration(seconds: totalSeconds);
@@ -167,5 +165,12 @@ class SessionHelper {
     int seconds = duration.inSeconds % 60;
     formattedTime =
         '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  double calculateAverageDuration(List<int> durations) {
+    if (durations.isEmpty) return 0; // Return 0 if there are no durations
+
+    int sum = durations.reduce((a, b) => a + b); // Sum all durations
+    return sum / durations.length; // Calculate average
   }
 }

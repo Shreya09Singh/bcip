@@ -30,23 +30,23 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: screenHeight * 0.02),
+              // SizedBox(height: screenHeight * 0.02),
               Align(
                 alignment: Alignment.center,
                 child: SizedBox(
-                  height: screenHeight * 0.3,
-                  width: screenWidth * 0.9,
+                  height: screenHeight * 0.25,
+                  width: screenWidth * 0.8,
                   child: WeekChart(
                     chartData: sessionhelper.chartdata,
                     chartType: ChartType.column,
                   ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.015),
+              SizedBox(height: screenHeight * 0.010),
               Row(
                 children: [
                   SizedBox(
-                    width: screenWidth * 0.35,
+                    width: screenWidth * 0.30,
                     child: CustomPieChart(
                       redValue: 50,
                       greenValue: sessionhelper.thresholdPercentage,
@@ -84,7 +84,7 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                   )
                 ],
               ),
-              SizedBox(height: screenHeight * 0.015),
+              SizedBox(height: screenHeight * 0.01),
               Text(
                 "Weekly Progress",
                 style: TextStyle(
@@ -157,7 +157,7 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
               ),
               SizedBox(height: screenHeight * 0.015),
               ProgressStat(
-                value: sessionhelper.previoustime.toString(),
+                value: sessionhelper.averageweekprogress.round().toString(),
                 label: "min/day",
                 subLabel: "Previous week",
                 valueColor: brandPrimaryColor,
@@ -166,23 +166,23 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
               ),
               SizedBox(height: screenHeight * 0.005),
               LinearProgressIndicator(
-                value: sessionhelper.previoustime / 100,
+                value: sessionhelper.averageweekprogress / 100,
                 backgroundColor: Colors.grey.shade300,
-                color: Colors.blue.shade400,
+                color: brandPrimaryColor,
                 minHeight: screenHeight * 0.008,
                 borderRadius: BorderRadius.circular(4),
               ),
-              SizedBox(height: screenHeight * 0.04),
+              SizedBox(height: screenHeight * 0.02),
               SizedBox(
-                height: screenHeight * 0.1,
-                width: screenWidth * 0.9,
+                height: screenHeight * 0.09,
+                width: screenWidth * 1.1,
                 child: Card(
                   color: Color(0xFF334155),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: screenWidth * 0.02),
+                        padding: EdgeInsets.only(left: screenWidth * 0.05),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,14 +191,14 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                               'Goal Streak',
                               style: TextStyle(
                                   color: textPrimaryColor,
-                                  fontSize: screenWidth * 0.045),
+                                  fontSize: screenWidth * 0.040),
                             ),
                             Text(
                               '3 days in a row',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: textPrimaryColor,
-                                  fontSize: screenWidth * 0.05),
+                                  fontSize: screenWidth * 0.045),
                             ),
                           ],
                         ),
@@ -210,7 +210,7 @@ class _WeekViewScreenState extends State<WeekViewScreen> {
                             children: List.generate(7, (index) {
                               return Container(
                                 width: screenWidth * 0.008,
-                                height: screenHeight * 0.03,
+                                height: screenHeight * 0.025,
                                 margin: EdgeInsets.symmetric(
                                     horizontal: screenWidth * 0.005),
                                 color: (index > 2 && index < 6)

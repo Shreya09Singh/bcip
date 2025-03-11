@@ -1,5 +1,5 @@
 import 'package:bciapplication/model/getSessionModel.dart';
-import 'package:bciapplication/services/getsession_api_services.dart';
+import 'package:bciapplication/services/api/getsession_api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

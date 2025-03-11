@@ -48,7 +48,11 @@ class TaskItemWidget extends StatelessWidget {
             }),
             checkColor: textPrimaryColor,
             value: isCompleted,
-            onChanged: onCheckboxChanged,
+            onChanged: (bool? value) {
+              if (onCheckboxChanged != null) {
+                onCheckboxChanged!(value); // Call the function to update state
+              }
+            },
           ),
           SizedBox(width: screenWidth * 0.02), // Spacing
           Expanded(

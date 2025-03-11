@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bciapplication/widget/BottomNavigationBar.dart';
+import 'package:bciapplication/widget/customSnakebar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -58,11 +59,11 @@ class _BasicInformationScreenState extends State<BasicInformationScreen> {
 
     if (!mounted) return;
 
-    if (isSuccess) {
-      showSnackBar("User added successfully!");
-    } else {
-      showSnackBar("Failed to add user. Try again.");
-    }
+    CustomSnackBar.show(
+        context,
+        isSuccess
+            ? "Session added successfully!"
+            : "Failed to add session. Try again.");
   }
 
 //[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]

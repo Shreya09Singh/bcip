@@ -1,4 +1,6 @@
 import 'package:bciapplication/model/TaskModel.dart';
+import 'package:bciapplication/model/TodoModel.dart';
+import 'package:bciapplication/provider/Todo_provider.dart';
 import 'package:bciapplication/provider/taskProvider2.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/widget/TaskItemWidget.dart';
@@ -12,11 +14,11 @@ class ShowtasksCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<TaskProvider2>(context);
+    final provider = Provider.of<TodoProvider>(context);
 
     //  Filter tasks by category
-    final List<Task> filteredTasks = provider.tasks
-        .where((task) => task.category == category) // Filter by category
+    final List<TodoModel> filteredTasks = provider.todotypeList
+        .where((task) => task.type == category) // Filter by category
         .toList();
 
     return Scaffold(
@@ -60,13 +62,14 @@ class ShowtasksCategory extends StatelessWidget {
                   ),
                   child: TaskItemWidget(
                     title: task.title,
-                    displayDate: task.dateTime,
-                    timeOfDay: task.timeOfDay,
+                    displayDate: task.date,
+                    timeOfDay: task.time,
+
                     isCompleted: task.isCompleted,
                     onCheckboxChanged: (bool? value) {
                       provider.toggleTaskCompletion(task);
                     },
-                    category: task.category,
+                    category: task.type,
                     // icon: task.icons!,
                   ),
                 );

@@ -7,6 +7,7 @@ import 'package:bciapplication/services/api/API_services.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/utils/string.dart';
 import 'package:bciapplication/widget/BottomNavigationBar.dart';
+import 'package:bciapplication/widget/customSnakebar.dart';
 
 import 'package:bciapplication/widget/onboarding_button.dart';
 import 'package:flutter/material.dart';
@@ -57,8 +58,11 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
 
       if (!mounted) return;
       if (isVerified) {
-        showSnackBar("OTP verification successful!");
-
+        CustomSnackBar.show(
+            context,
+            isVerified
+                ? "OTP Varification successful!"
+                : "Failed to varification. Try again.");
         onLoginSuccess(phoneNumber);
         Navigator.pushReplacement(
           context,
@@ -67,11 +71,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                     phoneNumber: phoneNumber,
                   )), // Replace with your next screen
         );
-      } else {
-        showSnackBar("Invalid OTP. Please try again.");
       }
-    } else {
-      showSnackBar("Enter a valid 4-digit OTP");
     }
   }
 
