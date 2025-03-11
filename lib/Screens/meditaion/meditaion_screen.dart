@@ -1,5 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
+import 'package:bciapplication/provider/timer_provider.dart';
 import 'package:bciapplication/services/api/API_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,20 +30,20 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController nubcontroller = TextEditingController();
   TextEditingController musiccontroller = TextEditingController();
-  List<Map<String, dynamic>> searchResults = [];
+
   double selectedThreshold = 0; // Default value from slider
-  APIService apiService = APIService();
 
   @override
   void initState() {
     super.initState();
     print("✅ initState is running");
     Provider.of<SessionProvider>(context, listen: false).fetchSessions();
-    // Provider.of<SessionProvider>(context, listen: false).loadSessionId();
   }
 
   String? selectedSessionId;
   String? selectedSessionName;
+
+  int? _selectedIndex; // Store the index of the selected session
 
   void handleThresholdChange(double value) {
     setState(() {
@@ -50,18 +54,11 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
 
   Widget build(BuildContext context) {
     final provider = Provider.of<ConnectionProvider>(context);
-
-    // void playSession(String sessionId, String sessionName) async {
-    //   apiService.setCurrentPlayingSession(
-    //       sessionId, sessionName); // Store the current session ID
-    //   print("Playing session id: $sessionId");
-    //   print("Playing session name: $sessionName");
-
-    //   // If you are using an audio player package, start playing the session here.
-    //   // Example: audioPlayer.play(session.filePath);
-    // }
-
     final sessionProvider = Provider.of<SessionProvider>(context);
+    final timerProvider = Provider.of<TimerProvider>(context);
+
+    List<String> filePaths =
+        sessionProvider.sessions.map((val) => val.filePath).toList();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -234,6 +231,9 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                                         selectedSessionId = session.sessionId;
                                         selectedSessionName =
                                             session.sessionName;
+                                        setState(() {
+                                          _selectedIndex = index;
+                                        });
                                       },
                                       child: Column(
                                         children: [
@@ -353,6 +353,17 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
                   child: OnboardingButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          if (_selectedIndex != null) {
+                            sessionProvider
+                                .playAudioo(filePaths[_selectedIndex!]);
+                            timerProvider.startTimer(
+                                int.tryParse(nubcontroller.text) ?? 0);
+
+                            timerProvider.meditationTimer();
+
+                            print("selectedIndex");
+                            print(_selectedIndex);
+                          }
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -413,3 +424,14 @@ class _MeditaionScreenState extends State<MeditaionScreen> {
     );
   }
 }
+
+
+ // void playSession(String sessionId, String sessionName) async {
+    //   apiService.setCurrentPlayingSession(
+    //       sessionId, sessionName); // Store the current session ID
+    //   print("Playing session id: $sessionId");
+    //   print("Playing session name: $sessionName");
+
+    //   // If you are using an audio player package, start playing the session here.
+    //   // Example: audioPlayer.play(session.filePath);
+    // }

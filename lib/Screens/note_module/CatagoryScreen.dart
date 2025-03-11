@@ -14,7 +14,7 @@ class ShowtasksCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<TaskProvider2>(context);
 
-    // Filter tasks by category
+    //  Filter tasks by category
     final List<Task> filteredTasks = provider.tasks
         .where((task) => task.category == category) // Filter by category
         .toList();

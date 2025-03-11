@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetsessionProvider with ChangeNotifier {
-  Getsessionmodel? _user;
+  UserModel? _user;
   bool _isLoading = false;
 
-  Getsessionmodel? get user => _user;
+  UserModel? get user => _user;
   bool get isLoading => _isLoading;
 
   String? _userId;
@@ -41,7 +41,7 @@ class GetsessionProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    Getsessionmodel? fetchedUser =
+    UserModel? fetchedUser =
         await _apiService.fetchUserSessionData(phoneno.toString());
 
     if (fetchedUser != null) {
@@ -51,4 +51,44 @@ class GetsessionProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  // Map<String, dynamic> get sessionData {
+  //   if (_user == null || _user!.sessions.isEmpty) {
+  //     return {
+  //       "greenval": 0.0,
+  //       "sec": 0,
+  //       "sessionName1": "No Session Available",
+  //       "sessionName2": "No Session Available",
+  //       "progresss1": 0,
+  //       "progresss2": 0,
+  //       "pro": 0.0,
+  //     };
+  //   }
+
+  //   int sessionIndex = _user!.sessions.length - 1; // Last session
+
+  //   double greenval =
+  //       _user!.sessions[sessionIndex].selectedThreshold.toDouble();
+  //   int sec = _user!.sessions[sessionIndex].actualDuration;
+  //   int progresss1 = _user!.sessions[sessionIndex].actualDuration;
+  //   int progresss2 = _user!.sessions[sessionIndex].listenDuration;
+
+  //   double pro =
+  //       (progresss2 > 0) ? (progresss1.toDouble() / progresss2.toDouble()) : 0;
+
+  //   String sessionName1 = _user!.sessions[sessionIndex].sessionName;
+  //   String sessionName2 = (sessionIndex > 0)
+  //       ? _user!.sessions[sessionIndex - 1].sessionName
+  //       : "No Session Available";
+
+  //   return {
+  //     "greenval": greenval,
+  //     "sec": sec,
+  //     "sessionName1": sessionName1,
+  //     "sessionName2": sessionName2,
+  //     "progresss1": progresss1,
+  //     "progresss2": progresss2,
+  //     "pro": pro,
+  //   };
+  // }
 }

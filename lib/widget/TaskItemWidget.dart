@@ -9,7 +9,6 @@ class TaskItemWidget extends StatelessWidget {
   final bool isCompleted;
   final ValueChanged<bool?>? onCheckboxChanged;
   final String category;
-  // final IconData icon;
 
   const TaskItemWidget({
     Key? key,
@@ -19,79 +18,96 @@ class TaskItemWidget extends StatelessWidget {
     required this.isCompleted,
     this.onCheckboxChanged,
     required this.category,
-    // required this.icon,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double containerWidth = screenWidth * 0.9; // 90% of screen width
+    double fontSize = screenWidth * 0.045; // Scales text size based on width
+
     return Container(
       height: 80,
-      width: 300,
+      width: containerWidth,
+      padding:
+          EdgeInsets.symmetric(horizontal: screenWidth * 0.03), // 3% padding
       decoration: BoxDecoration(
         color: greybackgroundColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(6),
       ),
-      child: ListTile(
-        leading: SizedBox(
-            width: 15,
-            child: Checkbox(
-              shape: CircleBorder(), // Optional: Make it square
-              side: BorderSide(
-                  color: backgroundLightBlueColor,
-                  width: 1.5), // Change border color when unchecked
-              fillColor: WidgetStateProperty.resolveWith<Color>((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return brandPrimaryColor; // Filled color when checked
-                }
-                return Colors.transparent; // Transparent when unchecked
-              }),
-              checkColor: textPrimaryColor, // Tick color
-              value: isCompleted,
-              onChanged: onCheckboxChanged,
-            )),
-        title: Text(
-          overflow: TextOverflow.ellipsis,
-          maxLines: 2,
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 17,
-            color: Colors.white,
+      child: Row(
+        children: [
+          Checkbox(
+            shape: CircleBorder(),
+            side: BorderSide(color: backgroundLightBlueColor, width: 1.5),
+            fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.selected)) {
+                return brandPrimaryColor;
+              }
+              return Colors.transparent;
+            }),
+            checkColor: textPrimaryColor,
+            value: isCompleted,
+            onChanged: onCheckboxChanged,
           ),
-        ),
-        subtitle: Row(
-          children: [
-            Text(
-              "$displayDate at $timeOfDay",
-              style: TextStyle(fontSize: 12, color: textSecondaryColor),
+          SizedBox(width: screenWidth * 0.02), // Spacing
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: fontSize,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "$displayDate at $timeOfDay",
+                  style: TextStyle(
+                    fontSize: fontSize * 0.7, // Smaller subtitle
+                    color: textSecondaryColor,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        trailing: Container(
-          height: 40,
-          width: 85,
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(6),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                categoryIcons[category] ?? Icons.category,
-                color: textPrimaryColor,
-                size: 20,
-              ),
-              // Icon(icon, size: 18, color: Colors.white),
-              SizedBox(width: 4),
-              Text(
-                overflow: TextOverflow.ellipsis,
-                category,
-                style: TextStyle(fontSize: 12, color: Colors.white),
-              ),
-            ],
+          SizedBox(width: screenWidth * 0.02),
+          Container(
+            height: screenWidth * 0.12,
+            width: screenWidth * 0.24,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  categoryIcons[category] ?? Icons.category,
+                  color: textPrimaryColor,
+                  size: screenWidth * 0.05,
+                ),
+                SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    category,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: fontSize * 0.7,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

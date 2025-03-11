@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bciapplication/model/sessionModel.dart';
@@ -50,11 +51,6 @@ class SessionProvider with ChangeNotifier {
     }
   }
 
-  //  void clearSearchResults() {
-  //   _searchsonglist = [];
-  //   notifyListeners();
-  // }
-
   /// Get file path by session ID
   String? getFilePathById(String sessionId) {
     final session = _sessions.firstWhere(
@@ -70,82 +66,34 @@ class SessionProvider with ChangeNotifier {
     return session.filePath.isNotEmpty ? session.filePath : null;
   }
 
-  Map<String, bool> _isPlayingMap = {}; // Store playing state for each session
-
-  bool isPlaying(String filePath) => _isPlayingMap[filePath] ?? false;
-
-  Future<void> togglePlay(String filePath) async {
+  bool _isPlaying = false; // Track playback state
+  //;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  Future<void> playAudioo(String filePath) async {
     if (filePath.isEmpty) return;
 
-    bool currentlyPlaying = _isPlayingMap[filePath] ?? false;
-
     try {
-      if (currentlyPlaying) {
+      await _audioPlayer.play(UrlSource(filePath));
+      _isPlaying = true;
+      notifyListeners(); // Notify UI
+    } catch (e) {
+      print("Error playing audio: $e");
+    }
+  }
+
+//;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  Future<void> pauseAudio() async {
+    try {
+      print("Attempting to pause audio...");
+      if (_isPlaying) {
         await _audioPlayer.pause();
+        _isPlaying = false;
+        notifyListeners(); // Notify UI
+        print("Audio paused successfully.");
       } else {
-        await _audioPlayer.play(UrlSource(filePath));
+        print("No active playback found.");
       }
-
-      // Update only this session's state
-      _isPlayingMap = {
-        filePath: !currentlyPlaying
-      }; // Only keep one active at a time
-      notifyListeners();
     } catch (e) {
-      print("Error playing audio: $e");
-    }
-  }
-
-  Future<void> playAudio(String filePath) async {
-    if (filePath.isEmpty) return;
-
-    try {
-      await _audioPlayer.play(UrlSource(filePath)); // Play the audio
-      _isPlayingMap[filePath] = true; // Mark this file as playing
-      notifyListeners();
-    } catch (e) {
-      print("Error playing audio: $e");
-    }
-  }
-
-  Future<void> stop() async {
-    try {
-      await _audioPlayer.stop(); // Stop the audio completely
-      _isPlayingMap.clear(); // Clear all playing states
-      notifyListeners();
-    } catch (e) {
-      print("Error stopping audio: $e");
-    }
-  }
-
-  Timer? _timer;
-  int _remainingTime = 0;
-
-  int get remainingTime => _remainingTime; // Getter for UI
-
-  void startTimer(int minutes) {
-    int seconds = minutes * 60;
-    if (seconds > 0) {
-      _remainingTime = seconds;
-      notifyListeners();
-
-      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-        if (_remainingTime > 0) {
-          _remainingTime--;
-          notifyListeners(); // Notify UI updates
-        } else {
-          stopTimer(); // ✅ Stop when time reaches 0
-        }
-      });
-    }
-  }
-
-  void stopTimer() {
-    if (_timer != null) {
-      _timer!.cancel();
-      _timer = null;
-      notifyListeners();
-      print("Timer stopped at $_remainingTime seconds");
+      print("Error pausing audio: $e");
     }
   }
 }

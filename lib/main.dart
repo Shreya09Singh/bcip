@@ -1,5 +1,6 @@
 import 'package:bciapplication/Screens/meditaion/meditaion_screen.dart';
 import 'package:bciapplication/Screens/note_module/showProgress_screen.dart';
+import 'package:bciapplication/Screens/note_module/todo_List_screen.dart';
 import 'package:bciapplication/Screens/splash/Welcome_screen.dart';
 import 'package:bciapplication/provider/Todo_provider.dart';
 
@@ -11,6 +12,7 @@ import 'package:bciapplication/provider/taskProvider2.dart';
 import 'package:bciapplication/provider/connection_provider.dart';
 
 import 'package:bciapplication/provider/onboarding_provider.dart';
+import 'package:bciapplication/provider/timer_provider.dart';
 
 import 'package:flutter/material.dart';
 
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => TodoProvider()),
           ChangeNotifierProvider(create: (context) => SessionProvider()),
           ChangeNotifierProvider(create: (context) => GetsessionProvider()),
+          ChangeNotifierProvider(create: (context) => TimerProvider()),
         ],
         child: MaterialApp(
           title: 'Flutter Demo',
@@ -43,17 +46,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
           ),
-          // home: ShowtaskScreen()
-          // home: TodoListScreen(),
-          // home: ShowprogressScreen(),
-          // home: TaskScreen(),
           // home: MeditaionScreen(),
-          // home: Recomendedong(),
-          // home: SearchGanaScreen(),
           home: WelcomeScreen(),
-          // home: MusicScreen(),
-          // home: MusicPlayerScreenn(),
-          // home: SearchScreen(),
         ));
   }
 }

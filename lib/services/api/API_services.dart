@@ -78,51 +78,6 @@ class APIService {
     }
   }
 
-  // Future<bool> addUser(
-  //     {required String name,
-  //     required int age,
-  //     required String gender,
-  //     required String phoneNumber,
-  //     String email = "default@example.com", // Default email
-  //     required String dob}) async {
-  //   final Uri url = Uri.parse("$addUserUrl/addUser");
-
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: {"Content-Type": "application/json"},
-  //       body: jsonEncode({
-  //         "id": "",
-  //         "name": name,
-  //         "age": age,
-  //         "gender": gender,
-  //         "brainAge": age + 2, // Example logic
-  //         "records": [],
-  //         "isPremiumUser": false,
-  //         "premiumExpireDate": null,
-  //         "score": 1400,
-  //         "likes": [],
-  //         "mostOpened": [],
-  //         "eachSessionTime": [],
-  //         "phoneNumber": phoneNumber,
-  //         "email": email, // Add email, even if backend ignores it
-  //         "dob": dob,
-  //       }),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       print("User added successfully: ${response.body}");
-  //       return true;
-  //     } else {
-  //       print("Failed to add user: ${response.body}");
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     print("Error adding user: $e");
-  //     return false;
-  //   }
-  // }
-
   Future<bool> addUser({
     required String name,
     required int age,
@@ -239,6 +194,4 @@ class APIService {
       return [];
     }
   }
-
-  // final String _baseurl = "https://bci-backend-qzzf.onrender.com";
 }

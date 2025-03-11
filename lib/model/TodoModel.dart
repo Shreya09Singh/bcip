@@ -10,7 +10,7 @@ class TodoModel {
   final String date;
   final String time;
   final String type;
-  bool? isCompleted;
+  bool isCompleted;
   TodoModel({
     String? id,
     required this.title,
@@ -18,7 +18,7 @@ class TodoModel {
     required this.date,
     required this.time,
     required this.type,
-    this.isCompleted = false,
+    required this.isCompleted,
   }) : id = id ?? uuid.v4();
 
   // Convert JSON to Todo object
@@ -30,6 +30,7 @@ class TodoModel {
       date: json["date"] ?? DateFormat("dd / MM / yyyy").format(DateTime.now()),
       time: json["time"] ?? "",
       type: json["type"] ?? "",
+      isCompleted: json["isCompleted"] ?? false,
     );
   }
 
@@ -42,6 +43,7 @@ class TodoModel {
       "date": date,
       "time": time,
       "type": type,
+      "isCompleted": isCompleted,
     };
   }
 }

@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:bciapplication/Screens/meditaion/meditaion_screen.dart';
 import 'package:bciapplication/Screens/registration/basic_information_screen.dart';
 import 'package:bciapplication/Screens/registration/sharedpreference.dart';
 import 'package:bciapplication/services/api/API_services.dart';
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/utils/string.dart';
+import 'package:bciapplication/widget/BottomNavigationBar.dart';
 
 import 'package:bciapplication/widget/onboarding_button.dart';
 import 'package:flutter/material.dart';
@@ -167,12 +169,21 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
                         });
                       }
                     },
-                    child: Text(
-                      AppString.didnotreceive,
-                      style: TextStyle(
-                          color: brandPrimaryColor,
-                          fontSize: screenWidth * 0.036,
-                          decoration: TextDecoration.underline),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    BottomnavigationbarScreen()));
+                      },
+                      child: Text(
+                        AppString.didnotreceive,
+                        style: TextStyle(
+                            color: brandPrimaryColor,
+                            fontSize: screenWidth * 0.036,
+                            decoration: TextDecoration.underline),
+                      ),
                     ),
                   ),
                 ],

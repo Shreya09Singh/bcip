@@ -1,5 +1,5 @@
 import 'package:bciapplication/Screens/onboardingPages/onboarding_page.dart';
-import 'package:bciapplication/Screens/registration/registration_screen.dart';
+
 import 'package:bciapplication/utils/constants.dart';
 import 'package:bciapplication/utils/string.dart';
 import 'package:bciapplication/widget/custom_button.dart';

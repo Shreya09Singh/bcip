@@ -57,7 +57,7 @@ class WeekChart extends StatelessWidget {
             SizedBox(
               height: 60,
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -66,13 +66,13 @@ class WeekChart extends StatelessWidget {
                       icon: Icon(
                         Icons.chevron_left,
                         color: Colors.white,
-                        size: 32,
+                        size: 30,
                       ),
                     ),
                     Text(
                       'Jan 22-29 2025',
                       style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           color: textPrimaryColor,
                           fontWeight: FontWeight.bold),
                     ),
@@ -81,7 +81,7 @@ class WeekChart extends StatelessWidget {
                       icon: Icon(
                         Icons.chevron_right,
                         color: Colors.white,
-                        size: 32,
+                        size: 30,
                       ),
                     ),
                   ],
@@ -89,7 +89,7 @@ class WeekChart extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 180,
+              height: 160,
               child: SfCartesianChart(
                 plotAreaBorderColor: Colors.transparent,
                 primaryYAxis: NumericAxis(

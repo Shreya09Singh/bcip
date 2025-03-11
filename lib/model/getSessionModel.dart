@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class Getsessionmodel {
+class UserModel {
   final String id;
   final String name;
   final int age;
@@ -10,7 +10,7 @@ class Getsessionmodel {
   final String phoneNumber;
   final List<Session> sessions;
 
-  Getsessionmodel({
+  UserModel({
     required this.id,
     required this.name,
     required this.age,
@@ -21,8 +21,8 @@ class Getsessionmodel {
     required this.sessions,
   });
 
-  factory Getsessionmodel.fromJson(Map<String, dynamic> json) {
-    return Getsessionmodel(
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       id: json['id'],
       name: json['name'],
       age: json['age'],
@@ -30,23 +30,10 @@ class Getsessionmodel {
       brainAge: json['brainAge'],
       score: json['score'],
       phoneNumber: json['phoneNumber'],
-      sessions: (json['sessions'] as List<dynamic>)
+      sessions: (json['sessions'] as List)
           .map((session) => Session.fromJson(session))
           .toList(),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "name": name,
-      "age": age,
-      "gender": gender,
-      "brainAge": brainAge,
-      "score": score,
-      "phoneNumber": phoneNumber,
-      "sessions": sessions.map((session) => session.toJson()).toList(),
-    };
   }
 }
 
@@ -85,19 +72,5 @@ class Session {
       overThresholdValues: List<int>.from(json['overThresholdValues']),
       overThresholdCount: json['overThresholdCount'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "sessionId": sessionId,
-      "sessionName": sessionName,
-      "userId": userId,
-      "actualDuration": actualDuration,
-      "listenDuration": listenDuration,
-      "selectedThreshold": selectedThreshold,
-      "focusValues": focusValues,
-      "overThresholdValues": overThresholdValues,
-      "overThresholdCount": overThresholdCount,
-    };
   }
 }

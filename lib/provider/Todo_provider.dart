@@ -39,13 +39,13 @@ class TodoProvider with ChangeNotifier {
   }
 
   List<TodoModel> get completedTask =>
-      _todoList.where((todo) => todo.isCompleted!).toList();
+      _todoList.where((todo) => todo.isCompleted).toList();
   List<TodoModel> get todayTask => _todoList
-      .where((todo) => !todo.isCompleted! && isToday(parseDate(todo.time)))
+      .where((todo) => !todo.isCompleted && isToday(parseDate(todo.time)))
       .toList();
 
   List<TodoModel> get notCompletedTask =>
-      _todoList.where((todo) => !todo.isCompleted!).toList();
+      _todoList.where((todo) => !todo.isCompleted).toList();
 
   int get completedTaskCount => completedTask.length;
   int get notcompletedTaskCount => notCompletedTask.length;
@@ -78,7 +78,7 @@ class TodoProvider with ChangeNotifier {
   }
 
   void toggleTaskCompletion(TodoModel todo) {
-    todo.isCompleted = !todo.isCompleted!;
+    todo.isCompleted = !todo.isCompleted;
     notifyListeners();
   }
 

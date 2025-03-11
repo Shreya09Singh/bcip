@@ -41,58 +41,65 @@ class _TabBarScreenState extends State<TabBarScreen>
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return DefaultTabController(
-        length: widget.tabs.length,
-        initialIndex: widget.initialIndex,
-        child: Scaffold(
+      length: widget.tabs.length,
+      initialIndex: widget.initialIndex,
+      child: Scaffold(
+        backgroundColor: backgroundBlackColor,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: screenHeight * 0.16, // 16% of screen height
           backgroundColor: backgroundBlackColor,
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            toolbarHeight: 130,
-            backgroundColor: backgroundBlackColor,
-            title: Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: Column(
-                children: [
-                  Text(
-                    'Progress',
-                    style: GoogleFonts.poppins(
-                      color: brandPrimaryColor,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w700,
+          title: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+            child: Column(
+              children: [
+                Text(
+                  'Progress',
+                  style: GoogleFonts.poppins(
+                    color: brandPrimaryColor,
+                    fontSize: screenWidth * 0.08, // 8% of screen width
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.02), // 2% of screen height
+                Center(
+                  child: Container(
+                    height: screenHeight * 0.06, // 6% of screen height
+                    width: screenWidth * 0.9, // 90% of screen width
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF334155),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    padding: EdgeInsets.all(screenWidth * 0.01), // 1% padding
+                    child: TabBar(
+                      dividerHeight: 0,
+                      controller: _tabController,
+                      tabs: widget.tabs,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicator: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      labelColor: brandPrimaryColor,
+                      unselectedLabelColor: Colors.white,
+                      labelStyle: TextStyle(
+                          fontSize: screenWidth * 0.04), // 4% of width
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Color(0xFF334155),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      padding: EdgeInsets.all(4),
-                      child: TabBar(
-                        dividerHeight: 0,
-                        controller: _tabController,
-                        tabs: widget.tabs,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        indicator: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        labelColor: brandPrimaryColor,
-                        unselectedLabelColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          body: TabBarView(
-            controller: _tabController,
-            children: widget.tabViews,
-          ),
-        ));
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: widget.tabViews,
+        ),
+      ),
+    );
   }
 }

@@ -2,12 +2,12 @@ import 'dart:math';
 
 import 'package:bciapplication/Screens/note_module/showProgress_screen.dart';
 import 'package:bciapplication/Screens/progress/CustomChart.dart';
+import 'package:bciapplication/Screens/progress/calculation.dart';
 import 'package:bciapplication/Screens/progress/pie_chart.dart';
 import 'package:bciapplication/Screens/progress/week_view_screen.dart';
-import 'package:bciapplication/provider/getsession_provider.dart';
+
 import 'package:bciapplication/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class MonthViewScreen extends StatefulWidget {
   const MonthViewScreen({super.key});
@@ -17,45 +17,10 @@ class MonthViewScreen extends StatefulWidget {
 }
 
 class _MonthViewScreenState extends State<MonthViewScreen> {
-  // final List<WeekData> chartData = [
-  //   WeekData('Sun', 10),
-  //   WeekData('Mon', 3),
-  //   WeekData('Tue', 9),
-  //   WeekData('Wed', 6),
-  //   WeekData('Thu', 3),
-  //   WeekData('Fri', 4),
-  //   WeekData('Sat', 5),
-  // ];
-//
-  // late List<WeekData> modifiedChartData;
-
-  @override
-  void initState() {
-    super.initState();
-    // Modify chartData to generate random values for x-axis
-    // modifiedChartData = chartData.map((data) {
-    //   int randomNumber =
-    //       Random().nextInt(30) + 1; // Random number between 1 and 30
-    //   return WeekData(randomNumber.toString(),
-    //       data.value); // Using random number for x-axis
-    // }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final getsessionprovider = Provider.of<GetsessionProvider>(context);
-    List<int> focusValues = getsessionprovider.user!.sessions[0].focusValues;
-    print(focusValues); // Output: [90, 82, 66, 100, 94, 91, 8, 3, 6, 82]
+    SessionHelper sessionhelper = SessionHelper(context);
 
-    List<WeekData> chartData = [];
-
-    for (int i = 0; i < 7; i++) {
-      chartData.add(WeekData(
-        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i], // Weekday names
-        getsessionprovider.user!.sessions[0]
-            .focusValues[i], // Taking values from first session
-      ));
-    }
     return Scaffold(
       backgroundColor: backgroundBlackColor,
       body: SingleChildScrollView(
@@ -64,10 +29,11 @@ class _MonthViewScreenState extends State<MonthViewScreen> {
             Align(
               alignment: Alignment.center,
               child: SizedBox(
-                  height: 240,
-                  width: 325,
+                  height: 230,
+                  width: 300,
                   child: WeekChart(
-                      chartData: chartData, chartType: ChartType.line)),
+                      chartData: sessionhelper.chartdata,
+                      chartType: ChartType.line)),
             ),
             SizedBox(
               height: 10,
@@ -75,14 +41,10 @@ class _MonthViewScreenState extends State<MonthViewScreen> {
             Row(
               children: [
                 SizedBox(
-                  width: 165,
+                  width: 170,
                   child: CustomPieChart(
-                    redValue: 65,
-                    greenValue: getsessionprovider.isLoading
-                        ? 64
-                        : getsessionprovider
-                                .user!.sessions[0].selectedThreshold /
-                            2,
+                    redValue: 50,
+                    greenValue: sessionhelper.thresholdPercentage,
                     showPercentage: true,
                   ),
                 ),
@@ -156,11 +118,7 @@ class _MonthViewScreenState extends State<MonthViewScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ProgressStat(
-                            value: getsessionprovider.isLoading
-                                ? '0'
-                                : getsessionprovider
-                                    .user!.sessions[0].overThresholdCount
-                                    .toString(),
+                            value: sessionhelper.listenTime.toString(),
                             label: "min/day",
                             subLabel: "This month",
                             valueColor: brandPrimaryColor,
@@ -190,9 +148,7 @@ class _MonthViewScreenState extends State<MonthViewScreen> {
                       ),
                       SizedBox(height: 4),
                       LinearProgressIndicator(
-                        value: getsessionprovider
-                                .user!.sessions[1].listenDuration /
-                            10,
+                        value: sessionhelper.listenTime / 100,
                         backgroundColor: Colors.grey.shade300,
                         color: brandPrimaryColor,
                         minHeight: 8,
@@ -200,11 +156,7 @@ class _MonthViewScreenState extends State<MonthViewScreen> {
                       ),
                       SizedBox(height: 12),
                       ProgressStat(
-                        value: getsessionprovider.isLoading
-                            ? '6'
-                            : getsessionprovider
-                                .user!.sessions[0].actualDuration
-                                .toString(),
+                        value: sessionhelper.previoustime.toString(),
                         label: "min/day",
                         subLabel: "previous month",
                         valueColor: brandPrimaryColor,
@@ -213,13 +165,9 @@ class _MonthViewScreenState extends State<MonthViewScreen> {
                       ),
                       SizedBox(height: 4),
                       LinearProgressIndicator(
-                        value: getsessionprovider.isLoading
-                            ? 23
-                            : getsessionprovider
-                                    .user!.sessions[1].actualDuration /
-                                100,
+                        value: sessionhelper.listenTime / 100,
                         backgroundColor: Colors.grey.shade300,
-                        color: Colors.blue.shade400,
+                        color: brandPrimaryColor,
                         minHeight: 8,
                         borderRadius: BorderRadius.circular(4),
                       ),

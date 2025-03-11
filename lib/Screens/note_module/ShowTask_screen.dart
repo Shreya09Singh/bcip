@@ -1,7 +1,6 @@
-import 'package:bciapplication/model/TaskModel.dart';
 import 'package:bciapplication/model/TodoModel.dart';
 import 'package:bciapplication/provider/Todo_provider.dart';
-import 'package:bciapplication/provider/taskProvider2.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,10 +51,10 @@ class ShowtaskScreen extends StatelessWidget {
                       title: task.title,
                       displayDate: task.date,
                       timeOfDay: task.time,
-                      isCompleted: task.isCompleted!,
+                      isCompleted: task.isCompleted,
                       category: task.type,
                       // icon: task.icons!,
-                      ongoing: !task.isCompleted!);
+                      ongoing: !task.isCompleted);
                 }),
           ),
           Row(

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomPieChart extends StatelessWidget {
-  final double redValue;
-  final double greenValue;
+  final int redValue;
+  final int greenValue;
   final double radius;
   final bool showPercentage;
 
@@ -19,27 +19,28 @@ class CustomPieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double adjustedRadius = screenWidth * 0.15; // Adjust radius dynamically
+
     return Container(
-      width: 150,
-      height: 140,
+      width: screenWidth * 0.4, // 40% of screen width
+      height: screenWidth * 0.35, // 35% of screen width
       child: PieChart(
         PieChartData(
           sections: [
             PieChartSectionData(
-              value: redValue,
+              value: redValue.toDouble(),
               color: Colors.red,
-              radius: radius,
+              radius: adjustedRadius,
               showTitle: false,
             ),
             PieChartSectionData(
-              value: greenValue,
+              value: greenValue.toDouble(),
               color: Colors.lightGreen,
-              radius: radius,
-              title: showPercentage
-                  ? "${greenValue.toInt()}%"
-                  : "", // Show % only if true
+              radius: adjustedRadius,
+              title: showPercentage ? "${greenValue}%" : "",
               titleStyle: TextStyle(
-                fontSize: 22,
+                fontSize: screenWidth * 0.05, // Responsive font size
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -65,13 +66,25 @@ class LegendWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Row(
       children: [
-        Container(width: 16, height: 16, color: color),
+        Container(
+          width: screenWidth * 0.04, // Responsive square size
+          height: screenWidth * 0.04,
+          color: color,
+        ),
         const SizedBox(width: 5),
-        Text(text,
-            style:
-                GoogleFonts.poppins(color: textSecondaryColor, fontSize: 12)),
+        Flexible(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(
+              color: textSecondaryColor,
+              fontSize: screenWidth * 0.03, // Responsive font size
+            ),
+          ),
+        ),
       ],
     );
   }

@@ -7,7 +7,7 @@ import 'package:bciapplication/provider/Todo_provider.dart';
 import 'package:bciapplication/provider/taskProvider2.dart';
 
 import 'package:bciapplication/Screens/registration/basic_information_screen.dart';
-import 'package:bciapplication/model/TaskModel.dart';
+
 import 'package:bciapplication/provider/connection_provider.dart';
 import 'package:bciapplication/utils/constants.dart';
 
@@ -355,6 +355,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                                   catagoryController
                                                       .text.isNotEmpty) {
                                                 TodoModel newtodo = TodoModel(
+                                                    isCompleted: todoprovider
+                                                        .isCompleted,
                                                     title: titleController.text,
                                                     date: dateeController.text,
                                                     time: timeController.text,

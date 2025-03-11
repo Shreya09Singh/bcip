@@ -1,5 +1,5 @@
 import 'package:bciapplication/Screens/progress/CustomChart.dart';
-
+import 'package:bciapplication/Screens/progress/calculation.dart';
 import 'package:bciapplication/Screens/progress/pie_chart.dart';
 import 'package:bciapplication/provider/getsession_provider.dart';
 import 'package:bciapplication/utils/constants.dart';
@@ -15,273 +15,217 @@ class WeekViewScreen extends StatefulWidget {
 }
 
 class _WeekViewScreenState extends State<WeekViewScreen> {
-  // final List<WeekData> chartData = [
-  //   WeekData('Sun', 10),
-  //   WeekData('Mon', 3),
-  //   WeekData('Tue', 9),
-  //   WeekData('Wed', 6),
-  //   WeekData('Thu', 3),
-  //   WeekData('Fri', 4),
-  //   WeekData('Sat', 5),
-  // ];
-
   @override
   Widget build(BuildContext context) {
+    final sessionhelper = SessionHelper(context);
     final getsessionprovider = Provider.of<GetsessionProvider>(context);
-    List<int> focusValues = getsessionprovider.user!.sessions[0].focusValues;
-    print(focusValues); // Output: [90, 82, 66, 100, 94, 91, 8, 3, 6, 82]
-
-    List<WeekData> chartData = [];
-
-    for (int i = 0; i < 7; i++) {
-      chartData.add(WeekData(
-        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i], // Weekday names
-        getsessionprovider.user!.sessions[0]
-            .focusValues[i], // Taking values from first session
-      ));
-    }
-
-    print(chartData);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: backgroundBlackColor,
       body: SingleChildScrollView(
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                  height: 240,
-                  width: 325,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.09),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: screenHeight * 0.02),
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  height: screenHeight * 0.3,
+                  width: screenWidth * 0.9,
                   child: WeekChart(
-                      chartData: chartData, chartType: ChartType.column)),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 165,
-                  child: CustomPieChart(
-                    redValue: 40,
-                    greenValue: getsessionprovider.isLoading
-                        ? 64
-                        : getsessionprovider
-                                .user!.sessions[0].selectedThreshold /
-                            7,
-                    showPercentage: true,
+                    chartData: sessionhelper.chartdata,
+                    chartType: ChartType.column,
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Meditation Level Threshold',
-                          style: TextStyle(
-                              fontSize: 17,
-                              color: textPrimaryColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      LegendWidget(
-                          color: Colors.lightGreen,
-                          text: 'crossed 50 threshold value'),
-                      SizedBox(
-                        height: 6,
-                      ),
-                      LegendWidget(
-                          color: Colors.red,
-                          text: ' did not cross 50 threshold value'),
-                    ],
+              ),
+              SizedBox(height: screenHeight * 0.015),
+              Row(
+                children: [
+                  SizedBox(
+                    width: screenWidth * 0.35,
+                    child: CustomPieChart(
+                      redValue: 50,
+                      greenValue: sessionhelper.thresholdPercentage,
+                      showPercentage: true,
+                    ),
                   ),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-                padding: const EdgeInsets.only(left: 30, right: 30),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Weekly progress",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: brandPrimaryColor,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                              color: textSecondaryColor, fontSize: 12),
-                          children: [
-                            TextSpan(
-                                text: "On average, you practiced mindfulness "),
-                            TextSpan(
-                              text: getsessionprovider.isLoading
-                                  ? ' 0'
-                                  : getsessionprovider
-                                      .user!.sessions[0].overThresholdCount
-                                      .toString(),
-                              style: TextStyle(
-                                  color: Colors.lightGreen,
-                                  fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: screenWidth * 0.05,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            'Meditation Level Threshold',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.045,
+                              color: textPrimaryColor,
+                              fontWeight: FontWeight.bold,
                             ),
-                            TextSpan(
-                                text: "% less this week compared to last."),
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        LegendWidget(
+                            color: Colors.lightGreen,
+                            text: 'Crossed 50 threshold value'),
+                        SizedBox(height: screenHeight * 0.008),
+                        LegendWidget(
+                            color: Colors.red,
+                            text: 'Did not cross 50 threshold value'),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: screenHeight * 0.015),
+              Text(
+                "Weekly Progress",
+                style: TextStyle(
+                  fontSize: screenWidth * 0.06,
+                  fontWeight: FontWeight.bold,
+                  color: brandPrimaryColor,
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.01),
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    color: textSecondaryColor,
+                    fontSize: screenWidth * 0.030,
+                  ),
+                  children: [
+                    TextSpan(text: "On average, you practiced mindfulness "),
+                    TextSpan(
+                      text: sessionhelper.overThresholdCount.toString(),
+                      style: TextStyle(
+                          color: Colors.lightGreen,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(text: " % more this week compared to last."),
+                  ],
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.02),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ProgressStat(
+                    value: sessionhelper.listenTime.toString(),
+                    label: "min/day",
+                    subLabel: "This week",
+                    valueColor: brandPrimaryColor,
+                    labelColor: textPrimaryColor,
+                    subLabelColor: textSecondaryColor,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.02,
+                        vertical: screenHeight * 0.005),
+                    decoration: BoxDecoration(
+                      color: brandPrimaryColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.arrow_drop_up,
+                            color: Colors.lightGreen, size: screenWidth * 0.05),
+                        Text(
+                          " 4%",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenWidth * 0.04),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: screenHeight * 0.006),
+              LinearProgressIndicator(
+                value: sessionhelper.listenTime / 100,
+                backgroundColor: Colors.grey.shade300,
+                color: brandPrimaryColor,
+                minHeight: screenHeight * 0.008,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              SizedBox(height: screenHeight * 0.015),
+              ProgressStat(
+                value: sessionhelper.previoustime.toString(),
+                label: "min/day",
+                subLabel: "Previous week",
+                valueColor: brandPrimaryColor,
+                labelColor: textPrimaryColor,
+                subLabelColor: textSecondaryColor,
+              ),
+              SizedBox(height: screenHeight * 0.005),
+              LinearProgressIndicator(
+                value: sessionhelper.previoustime / 100,
+                backgroundColor: Colors.grey.shade300,
+                color: Colors.blue.shade400,
+                minHeight: screenHeight * 0.008,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              SizedBox(height: screenHeight * 0.04),
+              SizedBox(
+                height: screenHeight * 0.1,
+                width: screenWidth * 0.9,
+                child: Card(
+                  color: Color(0xFF334155),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: screenWidth * 0.02),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Goal Streak',
+                              style: TextStyle(
+                                  color: textPrimaryColor,
+                                  fontSize: screenWidth * 0.045),
+                            ),
+                            Text(
+                              '3 days in a row',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: textPrimaryColor,
+                                  fontSize: screenWidth * 0.05),
+                            ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ProgressStat(
-                            value: getsessionprovider.isLoading
-                                ? '0'
-                                : getsessionprovider
-                                    .user!.sessions[0].listenDuration
-                                    .toString(),
-                            label: "min/day",
-                            subLabel: "This week",
-                            valueColor: brandPrimaryColor,
-                            labelColor: textPrimaryColor,
-                            subLabelColor: textSecondaryColor,
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: brandPrimaryColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.arrow_drop_down,
-                                    color: Colors.red, size: 18),
-                                Text(
-                                  " 4%",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4),
-                      LinearProgressIndicator(
-                        value: getsessionprovider.isLoading
-                            ? 23
-                            : getsessionprovider
-                                    .user!.sessions[1].listenDuration /
-                                10,
-                        backgroundColor: Colors.grey.shade300,
-                        color: brandPrimaryColor,
-                        minHeight: 8,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      SizedBox(height: 12),
-                      ProgressStat(
-                        value: getsessionprovider.isLoading
-                            ? '34'
-                            : getsessionprovider
-                                .user!.sessions[0].selectedThreshold
-                                .toString(),
-                        label: "min/day",
-                        subLabel: "previous week",
-                        valueColor: brandPrimaryColor,
-                        labelColor: textPrimaryColor,
-                        subLabelColor: textSecondaryColor,
-                      ),
-                      SizedBox(height: 4),
-                      LinearProgressIndicator(
-                        value: getsessionprovider
-                                .user!.sessions[0].selectedThreshold /
-                            100,
-                        backgroundColor: Colors.grey.shade300,
-                        color: Colors.blue.shade400,
-                        minHeight: 8,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ])),
-            SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
-              child: SizedBox(
-                  height: 80,
-                  width: 320,
-                  child: Card(
-                    color: Color(0xFF334155),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Goal Streak',
-                                style: TextStyle(
-                                    color: textPrimaryColor, fontSize: 17),
-                              ),
-                              Text(
-                                '3 days in a row',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: textPrimaryColor,
-                                    fontSize: 20),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: List.generate(7, (index) {
-                                return Container(
-                                  width: 3, // Width of each stripe
-                                  height: 20, // Height of the stripes
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 2), // Space between stripes
-                                  // Alternating colors
-                                  color: (index > 2 && index < 6)
-                                      ? brandPrimaryColor
-                                      : textSecondaryColor,
-                                );
-                              })),
-                        )
-                      ],
-                    ),
-                  )),
-            ),
-            SizedBox(
-              height: 10,
-            )
-          ],
+                      Padding(
+                        padding: EdgeInsets.all(screenWidth * 0.02),
+                        child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: List.generate(7, (index) {
+                              return Container(
+                                width: screenWidth * 0.008,
+                                height: screenHeight * 0.03,
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: screenWidth * 0.005),
+                                color: (index > 2 && index < 6)
+                                    ? brandPrimaryColor
+                                    : textSecondaryColor,
+                              );
+                            })),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.02),
+            ],
+          ),
         ),
       ),
     );
@@ -308,35 +252,28 @@ class ProgressStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           value,
           style: GoogleFonts.poppins(
-            fontSize: 42,
+            fontSize: screenWidth * 0.1,
             color: valueColor,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(width: 7),
+        SizedBox(width: screenWidth * 0.015),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 20,
-                color: labelColor,
-              ),
-            ),
-            Text(
-              subLabel,
-              style: TextStyle(
-                fontSize: 13,
-                color: subLabelColor,
-              ),
-            ),
+            Text(label,
+                style: TextStyle(
+                    fontSize: screenWidth * 0.045, color: labelColor)),
+            Text(subLabel,
+                style: TextStyle(
+                    fontSize: screenWidth * 0.035, color: subLabelColor)),
           ],
         ),
       ],

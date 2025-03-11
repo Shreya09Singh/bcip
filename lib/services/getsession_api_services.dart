@@ -1,37 +1,33 @@
 import 'dart:convert';
-import 'package:bciapplication/model/getSessionModel.dart';
 import 'package:http/http.dart' as http;
+import 'package:bciapplication/model/getSessionModel.dart';
 
 class GetsessionApiServices {
-  final String baseUrl =
-      "https://bci-backend-qzzf.onrender.com"; // Replace with actual API
+  final String baseUrl = "https://bci-backend-qzzf.onrender.com";
 
-  Future<Getsessionmodel?> fetchUserSessionData(String phonenumber) async {
-    print("Phone Number Received: $phonenumber"); // Debugging
-
-    if (phonenumber.isEmpty || phonenumber.length < 10) {
+  Future<UserModel?> fetchUserSessionData(String phoneNumber) async {
+    if (phoneNumber.isEmpty || phoneNumber.length < 10) {
       print("Error: Invalid phone number");
       return null;
     }
 
-    final url = Uri.parse(
-        "https://bci-backend-qzzf.onrender.com/users/getUserByNumber/$phonenumber");
+    final url = Uri.parse("$baseUrl/users/getUserByNumber/$phoneNumber");
     print("Fetching data from: $url");
 
     try {
-      final response = await http.get(url);
-
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        return Getsessionmodel.fromJson(json.decode(response.body));
+        return UserModel.fromJson(json.decode(response.body));
       } else {
         print("Error: ${response.statusCode} - ${response.body}");
         return null;
       }
+    } on http.ClientException catch (e) {
+      print("ClientException: $e");
+      return null;
     } catch (e) {
-      print("Error fetching user data: $e");
+      print("Unexpected Error: $e");
       return null;
     }
   }
